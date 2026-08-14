@@ -55,10 +55,46 @@ def test_declares_the_capability_its_contributions_need(manifest):
 
 def test_ships_the_whole_team_the_app_is_named_for(spec):
     slugs = {a["slug"] for a in spec["agents"]}
-    assert {"product-owner", "architect"} <= slugs
-    # The Coder family is the point of having variants at all: same contract,
-    # different model, chosen by what the task is worth.
+    assert {"product-owner", "architect", "ux-coder-sonnet"} <= slugs
+    # The Coder and QA families are the point of having variants at all: same
+    # contract, different model, chosen by what the task is worth.
     assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= slugs
+    assert {"qa-sonnet", "qa-haiku"} <= slugs
+
+
+def test_qa_reviews_every_agent_that_delivers_something(spec):
+    """A QA wired to only some of the builders is worse than none: the ones
+    it isn't adjacent to never learn there is a review step at all."""
+    builders = {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+                "ux-coder-sonnet"}
+    flow = spec["agent_flows"][0]
+    by_id = {n["id"]: n.get("agent_slug") for n in flow["graph"]["nodes"]}
+    for qa in ("qa-sonnet", "qa-haiku"):
+        adjacent = set()
+        for e in flow["graph"]["edges"]:
+            if by_id.get(e["source"]) == qa:
+                adjacent.add(by_id.get(e["target"]))
+            elif by_id.get(e["target"]) == qa:
+                adjacent.add(by_id.get(e["source"]))
+        assert builders <= adjacent, f"{qa} does not review {builders - adjacent}"
+
+
+def test_the_ux_coder_sits_where_its_own_skill_says_it_does(spec):
+    """aw-agent-ux-coder tells the agent it is 'connected to Source and the
+    Product Owner'. If the graph disagrees, the skill is lying to it — and
+    the skill is the thing the agent actually reads."""
+    flow = spec["agent_flows"][0]
+    ux = next(n["id"] for n in flow["graph"]["nodes"]
+              if n.get("agent_slug") == "ux-coder-sonnet")
+    by_id = {n["id"]: n for n in flow["graph"]["nodes"]}
+    adjacent = set()
+    for e in flow["graph"]["edges"]:
+        if e["source"] == ux:
+            adjacent.add(e["target"])
+        elif e["target"] == ux:
+            adjacent.add(e["source"])
+    assert "source" in adjacent
+    assert any(by_id[a].get("agent_slug") == "product-owner" for a in adjacent)
 
 
 def test_every_flow_node_names_an_agent_this_app_declares(spec):
@@ -147,10 +183,10 @@ def test_skill_slugs_are_either_shipped_here_or_come_from_a_declared_dependency(
     agent still runs, just with no contract — which reads as a bad model,
     not a missing file."""
     shipped = {s["id"] for s in manifest["contributes"]["skills"]}
-    # aw-agent-coder is shipped by aw-app-agents-platform-runners, which this
-    # app declares a versioned dependency on precisely so the Coders' contract
-    # exists wherever they do.
-    from_dependency = {"aw-agent-coder"}
+    # These three are shipped by aw-app-agents-platform-runners, which this
+    # app declares a versioned dependency on precisely so the contracts exist
+    # wherever the agents referencing them do.
+    from_dependency = {"aw-agent-coder", "aw-agent-qa", "aw-agent-ux-coder"}
     depends_on = {d["id"] for d in manifest["dependencies"]["apps"]}
     assert "agents-platform-runners" in depends_on
     for agent in spec["agents"]:

@@ -19,12 +19,19 @@ builds on it.
 
 **3. Hand off rather than guess outside your lane.** The Product Owner
 decides what gets built and why; the Architect decides how it should be
-shaped; the Coders build and verify it. When a task hands you a decision
-that belongs to someone else — a coder hitting a genuine product question,
-an architect finding the design needs scope the PO didn't grant — route it
-to them and say so. The flow you're in tells you who is adjacent. Guessing
-silently across those lines is how a team of agents produces work nobody
-asked for.
+shaped; the Coders build it; the UX Coder owns prototypes and how they
+feel to use; QA decides whether what came out is what was asked for. When
+a task hands you a decision that belongs to someone else — a coder hitting
+a genuine product question, an architect finding the design needs scope
+the PO didn't grant, a UX Coder facing a business-intent call rather than
+a craft one — route it to them and say so. The flow you're in tells you
+who is adjacent. Guessing silently across those lines is how a team of
+agents produces work nobody asked for.
+
+One line that only binds QA, but that everyone should know binds it:
+**QA reviews, QA never fixes.** If QA quietly repaired what it was
+reviewing, the delivery would have no independent check left — so expect
+work to come back rather than come back already patched.
 
 Finish the task you were given. If part of it is blocked, deliver the rest
 in full and state plainly what you left out and why — scaling the work down

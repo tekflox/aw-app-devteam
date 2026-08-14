@@ -11,20 +11,35 @@ Installs the agents that take a request from "somebody wants this" to
 | **Coder - Opus** | Opus | `aw-agent-coder` |
 | **Coder - Haiku** | Haiku | `aw-agent-coder` |
 | **Coder - GPT5** | Codex / GPT-5 | `aw-agent-coder` |
+| **UX Coder - Sonnet** | Sonnet | `aw-agent-ux-coder` |
+| **QA - Sonnet** | Sonnet | `aw-agent-qa` |
+| **QA - Haiku** | Haiku | `aw-agent-qa` |
 
 …wired together by the **Agents Flow: Software Engineering**:
 
 ```
-Source → Product Owner → Architect → Coder - Sonnet
-                      ↘             ↘ Coder - Opus
-                        (and back)  ↘ Coder - Haiku
-                                    ↘ Coder - GPT5
+        ┌──────────────── UX Coder ──────────────┐
+        │                                        ↓
+Source → Product Owner → Architect → Coder ×4 → QA ×2
+              ↑                ↘ (and back)      │
+              └──────────────────────────────────┘
 ```
 
-Every Coder is also connected directly to the Product Owner. That edge is
-not decoration: a coder that hits a genuine product question mid-task
-should route it back rather than pick silently, and the flow is what tells
-it who to route to.
+Three edges there are load-bearing, not decoration:
+
+- **Every Coder connects straight to the Product Owner.** A coder that
+  hits a genuine product question mid-task should route it back rather
+  than pick silently, and the flow is what tells it who to route to.
+- **UX Coder hangs off Source and the PO, skipping the Architect.** A
+  prototype that waits on an architecture decision has stopped being a
+  prototype. This is also what `aw-agent-ux-coder` tells that agent about
+  itself — `tests/test_manifest.py` asserts the graph agrees with the
+  skill, because the skill is what the agent actually reads.
+- **QA connects back to the PO.** A rejection is often a scope finding,
+  not a bug report.
+
+QA reviews and QA never fixes. A QA that quietly repaired what it was
+reviewing would leave the delivery with no independent check at all.
 
 ## Why an app instead of clicking six times
 
@@ -57,10 +72,15 @@ by what the task is worth, not by what it's about:
 
 `aw-app-agents-platform-runners` **>= 0.55.0**. That floor is doing real
 work: 0.55.0 is the first version whose provisioner can seed an
-`agent_flows` entry, and it also ships the `aw-agent-coder` skill the four
-Coders reference by slug. Install against an older one and you get six
-agents, no flow, and no complaint — the half-installed state the version
-floor exists to prevent.
+`agent_flows` entry, and it also ships the `aw-agent-coder`, `aw-agent-qa`
+and `aw-agent-ux-coder` skills that six of these agents reference by slug.
+Install against an older one and you get the agents, no flow, and no
+complaint — the half-installed state the version floor exists to prevent.
+
+**UX Coder needs the UX-Proto app** to have somewhere to build. Its skill
+is written entirely around that app; without it the agent is told to say
+so plainly rather than scatter prototype files somewhere they don't
+belong. The other eight agents don't care.
 
 `aw-app-kb` is optional but the team is materially worse without it: all
 three contracts make `search_knowledge_base` a mandatory first step, and
