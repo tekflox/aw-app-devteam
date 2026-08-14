@@ -18,27 +18,40 @@ Installs the agents that take a request from "somebody wants this" to
 …wired together by the **Agents Flow: Software Engineering**:
 
 ```
-        ┌──────────────── UX Coder ──────────────┐
-        │                                        ↓
-Source → Product Owner → Architect → Coder ×4 → QA ×2
-              ↑                ↘ (and back)      │
-              └──────────────────────────────────┘
+        ┌──── UX Coder
+        │        ↑
+Source → Product Owner → Architect → Coder ×4
+              └──────── (and back) ──────┘
 ```
 
-Three edges there are load-bearing, not decoration:
+Two edges there are load-bearing, not decoration:
 
 - **Every Coder connects straight to the Product Owner.** A coder that
   hits a genuine product question mid-task should route it back rather
   than pick silently, and the flow is what tells it who to route to.
 - **UX Coder hangs off Source and the PO, skipping the Architect.** A
   prototype that waits on an architecture decision has stopped being a
-  prototype. This is also what `aw-agent-ux-coder` tells that agent about
-  itself — `tests/test_manifest.py` asserts the graph agrees with the
-  skill, because the skill is what the agent actually reads.
-- **QA connects back to the PO.** A rejection is often a scope finding,
-  not a bug report.
+  prototype. This is not a preference: `aw-agent-ux-coder` already tells
+  that agent it is "a node connected to Source and the Product Owner", so
+  `tests/test_manifest.py` asserts the graph agrees with the skill. The
+  skill is what the agent actually reads; if the two disagree, the graph
+  is the bug.
 
-QA reviews and QA never fixes. A QA that quietly repaired what it was
+### The two QA agents are shipped but NOT in the flow
+
+That is deliberate, and it is the rule this app follows: **shipping an
+agent and wiring it into a topology are separate decisions, and an app
+only gets to make the first one.**
+
+An enabled flow injects the adjacency list into every member's prompt at
+dispatch time — so adding a node is not bookkeeping, it is telling that
+agent how the team works. The UX Coder is in the graph because its own
+contract states its position. Nothing documents QA as part of this flow,
+so the app does not invent one. Draw it in the flow editor if you want it,
+which is also the only way it survives: seeding never updates an existing
+flow.
+
+QA reviews and QA never fixes — a QA that quietly repaired what it was
 reviewing would leave the delivery with no independent check at all.
 
 ## Why an app instead of clicking six times

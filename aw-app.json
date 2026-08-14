@@ -26,12 +26,12 @@
       {
         "id": "aw-agent-product-owner",
         "path": "skills/aw-agent-product-owner/SKILL.md",
-        "description": "Contract for the Product Owner agent \u2014 owns what gets built and why, turns a vague ask into a scoped, testable outcome, and stays out of how it is implemented. Says no, and says it early."
+        "description": "Contract for the Product Owner agent — owns what gets built and why, turns a vague ask into a scoped, testable outcome, and stays out of how it is implemented. Says no, and says it early."
       },
       {
         "id": "aw-agent-architect",
         "path": "skills/aw-agent-architect/SKILL.md",
-        "description": "Contract for the Architect agent \u2014 decides how a change should be shaped against the codebase that already exists, writes the decision down with its trade-offs, and hands the coders a plan grounded in real file paths rather than a sketch."
+        "description": "Contract for the Architect agent — decides how a change should be shaped against the codebase that already exists, writes the decision down with its trade-offs, and hands the coders a plan grounded in real file paths rather than a sketch."
       }
     ],
     "agents": {
@@ -39,7 +39,7 @@
         {
           "slug": "devteam-config",
           "name": "Dev Team",
-          "description": "The same bundle the workspace's existing coder agents run under (agent-config-aw-full), declared here so a fresh workspace gets it without anyone recreating it by hand: full workspace filesystem access, the shared network, git/GitHub and docker, /tmp, and the aw-gateway MCP server \u2014 without which there is no knowledge base to check a design against and no Kanban to file the work into.",
+          "description": "The same bundle the workspace's existing coder agents run under (agent-config-aw-full), declared here so a fresh workspace gets it without anyone recreating it by hand: full workspace filesystem access, the shared network, git/GitHub and docker, /tmp, and the aw-gateway MCP server — without which there is no knowledge base to check a design against and no Kanban to file the work into.",
           "mcp_servers": [
             "aw-gateway"
           ],
@@ -57,7 +57,7 @@
         {
           "slug": "devteam",
           "name": "Dev Team",
-          "description": "Product Owner, Architect and the Coder family \u2014 the agents that take a request from 'somebody wants this' to 'this is merged'.",
+          "description": "Product Owner, Architect and the Coder family — the agents that take a request from 'somebody wants this' to 'this is merged'.",
           "instructions_file": "prompts/group.md",
           "capabilities": "Scopes, designs, implements and verifies changes to a real codebase. Reads the knowledge base before deciding anything, works against the repo the run's cwd points at, and reports what actually changed."
         }
@@ -74,7 +74,7 @@
           "skill_slugs": [
             "aw-agent-coder"
           ],
-          "capabilities": "Implements a scoped coding task end to end in the repo this run targets \u2014 bug fix, feature, refactor or investigation \u2014 and verifies it before reporting.",
+          "capabilities": "Implements a scoped coding task end to end in the repo this run targets — bug fix, feature, refactor or investigation — and verifies it before reporting.",
           "use_cases": [
             "implement this feature",
             "fix this bug",
@@ -88,7 +88,7 @@
         {
           "slug": "coder-opus",
           "name": "Coder - Opus",
-          "description": "The coder for work where getting it wrong is expensive \u2014 a change that spans subsystems, a bug nobody has been able to reproduce, a refactor with no test coverage to catch a mistake.",
+          "description": "The coder for work where getting it wrong is expensive — a change that spans subsystems, a bug nobody has been able to reproduce, a refactor with no test coverage to catch a mistake.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
@@ -109,7 +109,7 @@
         {
           "slug": "coder-haiku",
           "name": "Coder - Haiku",
-          "description": "The coder for mechanical work \u2014 a rename across many files, a lint sweep, a dependency bump. Cheap and fast; hand it tasks where the answer is already decided.",
+          "description": "The coder for mechanical work — a rename across many files, a lint sweep, a dependency bump. Cheap and fast; hand it tasks where the answer is already decided.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-haiku",
           "agent_config_slug": "devteam-config",
@@ -138,7 +138,7 @@
           "skill_slugs": [
             "aw-agent-coder"
           ],
-          "capabilities": "Same contract as Coder - Sonnet, running the Codex CLI on GPT-5 \u2014 a genuinely independent implementation attempt, not the same model retried.",
+          "capabilities": "Same contract as Coder - Sonnet, running the Codex CLI on GPT-5 — a genuinely independent implementation attempt, not the same model retried.",
           "use_cases": [
             "get a second opinion from a different model",
             "the Claude coders keep converging on the same wrong fix",
@@ -151,7 +151,7 @@
         {
           "slug": "product-owner",
           "name": "Product Owner",
-          "description": "Owns what gets built and why. Turns a vague ask into a scoped outcome with a stated user, a stated success condition and an explicit out-of-scope list \u2014 and says no to the work that shouldn't happen, before anyone writes code for it.",
+          "description": "Owns what gets built and why. Turns a vague ask into a scoped outcome with a stated user, a stated success condition and an explicit out-of-scope list — and says no to the work that shouldn't happen, before anyone writes code for it.",
           "system_prompt_file": "prompts/product-owner.md",
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
@@ -161,7 +161,7 @@
           ],
           "capabilities": "Scopes a request into something buildable and verifiable: who it's for, what changes for them, how we'll know it worked, what is deliberately not in it. Decides priority and trade-offs. Does not decide implementation.",
           "use_cases": [
-            "somebody asked for X \u2014 is it worth building, and what exactly is it",
+            "somebody asked for X — is it worth building, and what exactly is it",
             "cut this scope down to something shippable this week",
             "write acceptance criteria for this request",
             "should we do this now or later"
@@ -181,10 +181,10 @@
           "skill_slugs": [
             "aw-agent-ux-coder"
           ],
-          "capabilities": "Builds and iterates a working prototype, judging it by whether someone could pick it up and use it without hitting a wall \u2014 not by whether it matches the sentence that was asked for.",
+          "capabilities": "Builds and iterates a working prototype, judging it by whether someone could pick it up and use it without hitting a wall — not by whether it matches the sentence that was asked for.",
           "use_cases": [
             "build a prototype for this idea",
-            "this screen is confusing \u2014 make it usable",
+            "this screen is confusing — make it usable",
             "iterate on the prototype with this feedback"
           ],
           "hidden_from_flow": false,
@@ -194,7 +194,7 @@
         {
           "slug": "qa-sonnet",
           "name": "QA - Sonnet",
-          "description": "Validates a finished delivery against what was actually asked for and decides the outcome \u2014 never writes the feature itself. The default QA: reach for it when the review needs judgement about whether the thing genuinely works.",
+          "description": "Validates a finished delivery against what was actually asked for and decides the outcome — never writes the feature itself. The default QA: reach for it when the review needs judgement about whether the thing genuinely works.",
           "system_prompt_file": "prompts/qa.md",
           "model_slug": "claude-runner-sonnet",
           "agent_config_slug": "devteam-config",
@@ -202,7 +202,7 @@
           "skill_slugs": [
             "aw-agent-qa"
           ],
-          "capabilities": "Reviews a completed task: checks the delivery against the request, verifies it rather than taking the report's word for it, and records a verdict \u2014 moving the Kanban card when there is one.",
+          "capabilities": "Reviews a completed task: checks the delivery against the request, verifies it rather than taking the report's word for it, and records a verdict — moving the Kanban card when there is one.",
           "use_cases": [
             "review what the coder just delivered",
             "does this actually do what the card asked for",
@@ -215,7 +215,7 @@
         {
           "slug": "qa-haiku",
           "name": "QA - Haiku",
-          "description": "The cheap QA pass, for deliveries where the check is mechanical \u2014 the file exists, the test runs, the command exits zero. Escalate to QA - Sonnet when the verdict turns on judgement rather than on a fact.",
+          "description": "The cheap QA pass, for deliveries where the check is mechanical — the file exists, the test runs, the command exits zero. Escalate to QA - Sonnet when the verdict turns on judgement rather than on a fact.",
           "system_prompt_file": "prompts/qa.md",
           "model_slug": "claude-runner-haiku",
           "agent_config_slug": "devteam-config",
@@ -236,7 +236,7 @@
         {
           "slug": "architect",
           "name": "Architect",
-          "description": "Decides how a change should be shaped against the codebase that already exists \u2014 which seam it goes through, what it must not break, what it makes harder later \u2014 and writes the decision down with its trade-offs so the coders inherit a plan, not a sketch.",
+          "description": "Decides how a change should be shaped against the codebase that already exists — which seam it goes through, what it must not break, what it makes harder later — and writes the decision down with its trade-offs so the coders inherit a plan, not a sketch.",
           "system_prompt_file": "prompts/architect.md",
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
@@ -260,7 +260,7 @@
         {
           "slug": "software-engineering",
           "name": "Agents Flow: Software Engineering",
-          "description": "How a request becomes shipped code: it arrives at Source, the Product Owner decides what it actually is and whether it's worth doing, the Architect decides how it should be shaped, the Coder family implements it, and QA decides whether what came out is actually what was asked for. Prototype work takes the short path \u2014 UX Coder hangs off Source and the PO directly, because a prototype that has to wait for an architecture decision isn't a prototype. Every edge is two-way: a design that turns out to be expensive is a scope conversation, a coder with a genuine product question routes it back to the PO instead of guessing, and a QA rejection goes to whoever can act on it.",
+          "description": "How a request becomes shipped code: it arrives at Source, the Product Owner decides what it actually is and whether it's worth doing, the Architect decides how it should be shaped, and the Coder family implements it. UX Coder hangs off Source and the PO directly — that placement is not a preference, it is what aw-agent-ux-coder already tells that agent about itself. Every edge is two-way: a design that turns out to be expensive is a scope conversation, and a coder with a genuine product question routes it back to the PO instead of guessing. The QA agents are deliberately NOT nodes here — nothing documents them as part of this flow, and an app should not invent a topology the contracts never described.",
           "enabled": true,
           "graph": {
             "nodes": [
@@ -342,26 +342,6 @@
                   "x": 300,
                   "y": 60
                 }
-              },
-              {
-                "id": "agent-qa-sonnet",
-                "type": "agent",
-                "agent_slug": "qa-sonnet",
-                "label": "QA - Sonnet",
-                "position": {
-                  "x": 1140,
-                  "y": 200
-                }
-              },
-              {
-                "id": "agent-qa-haiku",
-                "type": "agent",
-                "agent_slug": "qa-haiku",
-                "label": "QA - Haiku",
-                "position": {
-                  "x": 1140,
-                  "y": 340
-                }
               }
             ],
             "edges": [
@@ -424,66 +404,6 @@
                 "id": "e-po-ux",
                 "source": "agent-product-owner",
                 "target": "agent-ux-coder-sonnet"
-              },
-              {
-                "id": "e-sonnet-qas",
-                "source": "agent-coder-sonnet",
-                "target": "agent-qa-sonnet"
-              },
-              {
-                "id": "e-opus-qas",
-                "source": "agent-coder-opus",
-                "target": "agent-qa-sonnet"
-              },
-              {
-                "id": "e-haiku-qas",
-                "source": "agent-coder-haiku",
-                "target": "agent-qa-sonnet"
-              },
-              {
-                "id": "e-codex-qas",
-                "source": "agent-coder-codex",
-                "target": "agent-qa-sonnet"
-              },
-              {
-                "id": "e-ux-qas",
-                "source": "agent-ux-coder-sonnet",
-                "target": "agent-qa-sonnet"
-              },
-              {
-                "id": "e-qas-po",
-                "source": "agent-qa-sonnet",
-                "target": "agent-product-owner"
-              },
-              {
-                "id": "e-sonnet-qah",
-                "source": "agent-coder-sonnet",
-                "target": "agent-qa-haiku"
-              },
-              {
-                "id": "e-opus-qah",
-                "source": "agent-coder-opus",
-                "target": "agent-qa-haiku"
-              },
-              {
-                "id": "e-haiku-qah",
-                "source": "agent-coder-haiku",
-                "target": "agent-qa-haiku"
-              },
-              {
-                "id": "e-codex-qah",
-                "source": "agent-coder-codex",
-                "target": "agent-qa-haiku"
-              },
-              {
-                "id": "e-ux-qah",
-                "source": "agent-ux-coder-sonnet",
-                "target": "agent-qa-haiku"
-              },
-              {
-                "id": "e-qah-po",
-                "source": "agent-qa-haiku",
-                "target": "agent-product-owner"
               }
             ]
           }
@@ -498,7 +418,7 @@
         "id": "agents-platform-runners",
         "version": ">=0.55.0",
         "required": false,
-        "reason": "Provides the contributes.agents surface \u2014 it holds the Agents Platform base URL and identity token, which core does not. The floor matters twice over: 0.55.0 is the first version that can seed an agent_flows entry at all (older ones create the six agents and silently drop the flow, leaving a team with no topology), and it is also the app that ships the aw-agent-coder skill every Coder here references by slug. Non-required on purpose: a declaration that arrives before the provider is HELD and replayed the moment one appears, so this app installs cleanly either way."
+        "reason": "Provides the contributes.agents surface — it holds the Agents Platform base URL and identity token, which core does not. The floor matters twice over: 0.55.0 is the first version that can seed an agent_flows entry at all (older ones create the six agents and silently drop the flow, leaving a team with no topology), and it is also the app that ships the aw-agent-coder skill every Coder here references by slug. Non-required on purpose: a declaration that arrives before the provider is HELD and replayed the moment one appears, so this app installs cleanly either way."
       },
       {
         "id": "kb",

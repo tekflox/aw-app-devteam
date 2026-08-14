@@ -62,21 +62,18 @@ def test_ships_the_whole_team_the_app_is_named_for(spec):
     assert {"qa-sonnet", "qa-haiku"} <= slugs
 
 
-def test_qa_reviews_every_agent_that_delivers_something(spec):
-    """A QA wired to only some of the builders is worse than none: the ones
-    it isn't adjacent to never learn there is a review step at all."""
-    builders = {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
-                "ux-coder-sonnet"}
-    flow = spec["agent_flows"][0]
-    by_id = {n["id"]: n.get("agent_slug") for n in flow["graph"]["nodes"]}
-    for qa in ("qa-sonnet", "qa-haiku"):
-        adjacent = set()
-        for e in flow["graph"]["edges"]:
-            if by_id.get(e["source"]) == qa:
-                adjacent.add(by_id.get(e["target"]))
-            elif by_id.get(e["target"]) == qa:
-                adjacent.add(by_id.get(e["source"]))
-        assert builders <= adjacent, f"{qa} does not review {builders - adjacent}"
+def test_the_qa_agents_are_deliberately_not_in_the_flow(spec):
+    """Shipping an agent and wiring it into the topology are separate
+    decisions, and this app only gets to make the first one.
+
+    Nothing documents QA as part of the software-engineering flow — unlike
+    the UX Coder, whose own skill states its position. An app that invents
+    a topology its contracts never described is guessing at how a team
+    works and then teaching that guess to every agent in the graph, since
+    an enabled flow injects the adjacency list into their prompts.
+    """
+    wired = {n.get("agent_slug") for n in spec["agent_flows"][0]["graph"]["nodes"]}
+    assert not ({"qa-sonnet", "qa-haiku"} & wired)
 
 
 def test_the_ux_coder_sits_where_its_own_skill_says_it_does(spec):
@@ -122,14 +119,20 @@ def test_every_flow_edge_connects_two_real_nodes(spec):
             assert edge["target"] in ids, edge
 
 
-def test_every_agent_is_reachable_in_the_flow(spec):
-    """An agent declared but left off the graph gets no flow context at all —
-    it is on the team on paper and disconnected from it at dispatch time."""
-    for flow in spec["agent_flows"]:
-        wired = {n["agent_slug"] for n in flow["graph"]["nodes"]
-                 if n["type"] == "agent"}
-        missing = {a["slug"] for a in spec["agents"]} - wired
-        assert not missing, f"not wired into {flow['slug']!r}: {sorted(missing)}"
+def test_flow_membership_is_exactly_what_the_contracts_document(spec):
+    """Membership is an allow-list, not "every agent we ship".
+
+    An enabled flow injects the adjacency list into each member's prompt at
+    dispatch, so adding a node is telling that agent something about how the
+    team works. This app only asserts a position a contract already states
+    (see the UX Coder test below); everything else is left for a human to
+    draw in the flow editor, which is also the only way it survives —
+    seeding never updates an existing flow.
+    """
+    wired = {n["agent_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
+             if n["type"] == "agent"}
+    assert wired == {"product-owner", "architect", "coder-sonnet", "coder-opus",
+                     "coder-haiku", "coder-codex", "ux-coder-sonnet"}
 
 
 def test_the_flow_has_exactly_one_source_and_it_is_called_source(spec):
