@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Force bump kind"
+        type: choice
+        options: [major]
+
+jobs:
+  release:
+    # Moving ref: bumping app-release.yml in aw-marketplace propagates here
+    # automatically. Move to @v1 once aw-marketplace cuts a first tag.
+    #
+    # permissions here is the CEILING the called workflow's own
+    # `contents: write` request is checked against — this repo's default
+    # workflow permissions are read-only, so without this the run fails at
+    # startup (startup_failure, zero jobs) before ever reaching aw-marketplace.
+    permissions:
+      contents: write
+    uses: tekflox/aw-marketplace/.github/workflows/app-release.yml@master
+    with:
+      bump: ${{ inputs.bump || '' }}
+    secrets: inherit

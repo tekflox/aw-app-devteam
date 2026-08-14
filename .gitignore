@@ -1,0 +1,61 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Node / frontend tooling
+node_modules/
+ui/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.vite/
+ui/.vite/
+dist/
+build/
+ui/dist/
+ui/build/
+
+# Test and browser automation output
+test-results/
+playwright-report/
+coverage/
+ui/coverage/
+
+# Runtime scratch files
+.tmp/
+tmp/
+temp/
+*.log

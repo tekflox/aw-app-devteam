@@ -1,0 +1,288 @@
+{
+  "manifest_version": 1,
+  "id": "devteam",
+  "name": "Dev Team",
+  "version": "0.1.0",
+  "description": "The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.",
+  "tier": "inprocess",
+  "requires_ui_refresh": false,
+  "category": "Runnables",
+  "publisher": "TekFlox",
+  "resource_estimate": {
+    "cpu": "low",
+    "memory": "low",
+    "disk": "low"
+  },
+  "runtime": {
+    "python": ">=3.11",
+    "entrypoint": "devteam_app.plugin:DevTeamAppPlugin",
+    "pip_requires": []
+  },
+  "permissions": [
+    "agents:contribute"
+  ],
+  "contributes": {
+    "skills": [
+      {
+        "id": "aw-agent-product-owner",
+        "path": "skills/aw-agent-product-owner/SKILL.md",
+        "description": "Contract for the Product Owner agent — owns what gets built and why, turns a vague ask into a scoped, testable outcome, and stays out of how it is implemented. Says no, and says it early."
+      },
+      {
+        "id": "aw-agent-architect",
+        "path": "skills/aw-agent-architect/SKILL.md",
+        "description": "Contract for the Architect agent — decides how a change should be shaped against the codebase that already exists, writes the decision down with its trade-offs, and hands the coders a plan grounded in real file paths rather than a sketch."
+      }
+    ],
+    "agents": {
+      "agent_configs": [
+        {
+          "slug": "devteam-config",
+          "name": "Dev Team",
+          "description": "The same bundle the workspace's existing coder agents run under (agent-config-aw-full), declared here so a fresh workspace gets it without anyone recreating it by hand: full workspace filesystem access, the shared network, git/GitHub and docker, /tmp, and the aw-gateway MCP server — without which there is no knowledge base to check a design against and no Kanban to file the work into.",
+          "mcp_servers": [
+            "aw-gateway"
+          ],
+          "permissions": {
+            "workspace_access": true,
+            "share_network": true,
+            "github": true,
+            "docker": true,
+            "tmp_access": true
+          },
+          "auto_compact_threshold_tokens": 500000
+        }
+      ],
+      "groups": [
+        {
+          "slug": "devteam",
+          "name": "Dev Team",
+          "description": "Product Owner, Architect and the Coder family — the agents that take a request from 'somebody wants this' to 'this is merged'.",
+          "instructions_file": "prompts/group.md",
+          "capabilities": "Scopes, designs, implements and verifies changes to a real codebase. Reads the knowledge base before deciding anything, works against the repo the run's cwd points at, and reports what actually changed."
+        }
+      ],
+      "agents": [
+        {
+          "slug": "coder-sonnet",
+          "name": "Coder - Sonnet",
+          "description": "The default coder. Reads code, writes code, runs it, reports what changed. Pick this one unless the task specifically wants a cheaper or a deeper model.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "claude-runner-sonnet",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Implements a scoped coding task end to end in the repo this run targets — bug fix, feature, refactor or investigation — and verifies it before reporting.",
+          "use_cases": [
+            "implement this feature",
+            "fix this bug",
+            "refactor this module",
+            "why does this test fail"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#58a6ff"
+        },
+        {
+          "slug": "coder-opus",
+          "name": "Coder - Opus",
+          "description": "The coder for work where getting it wrong is expensive — a change that spans subsystems, a bug nobody has been able to reproduce, a refactor with no test coverage to catch a mistake.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "claude-runner-opus",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same contract as Coder - Sonnet, on the deepest model. For tasks where a wrong answer costs more than the extra tokens.",
+          "use_cases": [
+            "this bug has survived two fix attempts",
+            "change that spans several subsystems",
+            "refactor code with no tests to catch a mistake"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#b794f4"
+        },
+        {
+          "slug": "coder-haiku",
+          "name": "Coder - Haiku",
+          "description": "The coder for mechanical work — a rename across many files, a lint sweep, a dependency bump. Cheap and fast; hand it tasks where the answer is already decided.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "claude-runner-haiku",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same contract as Coder - Sonnet, on the cheapest model. For high-volume, low-judgement edits.",
+          "use_cases": [
+            "rename this symbol everywhere",
+            "apply this same edit across 30 files",
+            "bump the dependency and fix the fallout"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#8b949e"
+        },
+        {
+          "slug": "coder-codex",
+          "name": "Coder - GPT5",
+          "description": "The coder on a different vendor's model, via the Codex CLI. Useful as a second opinion when a Claude-backed coder has stalled on something, and as the fallback when Anthropic is degraded.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "codex-runner-gpt-5",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same contract as Coder - Sonnet, running the Codex CLI on GPT-5 — a genuinely independent implementation attempt, not the same model retried.",
+          "use_cases": [
+            "get a second opinion from a different model",
+            "the Claude coders keep converging on the same wrong fix",
+            "Anthropic is down and this still needs shipping"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#ffa657"
+        },
+        {
+          "slug": "product-owner",
+          "name": "Product Owner",
+          "description": "Owns what gets built and why. Turns a vague ask into a scoped outcome with a stated user, a stated success condition and an explicit out-of-scope list — and says no to the work that shouldn't happen, before anyone writes code for it.",
+          "system_prompt_file": "prompts/product-owner.md",
+          "model_slug": "claude-runner-opus",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-product-owner"
+          ],
+          "capabilities": "Scopes a request into something buildable and verifiable: who it's for, what changes for them, how we'll know it worked, what is deliberately not in it. Decides priority and trade-offs. Does not decide implementation.",
+          "use_cases": [
+            "somebody asked for X — is it worth building, and what exactly is it",
+            "cut this scope down to something shippable this week",
+            "write acceptance criteria for this request",
+            "should we do this now or later"
+          ],
+          "hidden_from_flow": false,
+          "icon": "target",
+          "color": "#f0c000"
+        },
+        {
+          "slug": "architect",
+          "name": "Architect",
+          "description": "Decides how a change should be shaped against the codebase that already exists — which seam it goes through, what it must not break, what it makes harder later — and writes the decision down with its trade-offs so the coders inherit a plan, not a sketch.",
+          "system_prompt_file": "prompts/architect.md",
+          "model_slug": "claude-runner-opus",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "skill_slugs": [
+            "aw-agent-architect"
+          ],
+          "capabilities": "Turns a scoped requirement into a design grounded in the real code: the seam to change, the files involved, the alternatives rejected and why, and the risks a coder should watch for. Reads far more than it writes.",
+          "use_cases": [
+            "how should we build this",
+            "which of these two designs should we pick",
+            "will this change break anything we can't see",
+            "review this plan before we start coding"
+          ],
+          "hidden_from_flow": false,
+          "icon": "layers",
+          "color": "#2dd4bf"
+        }
+      ],
+      "agent_flows": [
+        {
+          "slug": "software-engineering",
+          "name": "Agents Flow: Software Engineering",
+          "description": "How a request becomes shipped code: it arrives at Source, the Product Owner decides what it actually is and whether it's worth doing, the Architect decides how it should be shaped, and the Coder family implements it. PO and Architect stay connected in both directions — a design that turns out to be expensive is a scope conversation, not an implementation detail — and every coder can route a product question back to the PO rather than guessing at it silently.",
+          "enabled": true,
+          "graph": {
+            "nodes": [
+              {
+                "id": "source",
+                "type": "source",
+                "label": "Source",
+                "position": { "x": 40, "y": 260 }
+              },
+              {
+                "id": "agent-product-owner",
+                "type": "agent",
+                "agent_slug": "product-owner",
+                "label": "Product Owner",
+                "position": { "x": 300, "y": 260 }
+              },
+              {
+                "id": "agent-architect",
+                "type": "agent",
+                "agent_slug": "architect",
+                "label": "Architect",
+                "position": { "x": 580, "y": 260 }
+              },
+              {
+                "id": "agent-coder-sonnet",
+                "type": "agent",
+                "agent_slug": "coder-sonnet",
+                "label": "Coder - Sonnet",
+                "position": { "x": 860, "y": 80 }
+              },
+              {
+                "id": "agent-coder-opus",
+                "type": "agent",
+                "agent_slug": "coder-opus",
+                "label": "Coder - Opus",
+                "position": { "x": 860, "y": 200 }
+              },
+              {
+                "id": "agent-coder-haiku",
+                "type": "agent",
+                "agent_slug": "coder-haiku",
+                "label": "Coder - Haiku",
+                "position": { "x": 860, "y": 320 }
+              },
+              {
+                "id": "agent-coder-codex",
+                "type": "agent",
+                "agent_slug": "coder-codex",
+                "label": "Coder - GPT5",
+                "position": { "x": 860, "y": 440 }
+              }
+            ],
+            "edges": [
+              { "id": "e-source-po", "source": "source", "target": "agent-product-owner" },
+              { "id": "e-po-arch", "source": "agent-product-owner", "target": "agent-architect" },
+              { "id": "e-arch-sonnet", "source": "agent-architect", "target": "agent-coder-sonnet" },
+              { "id": "e-arch-opus", "source": "agent-architect", "target": "agent-coder-opus" },
+              { "id": "e-arch-haiku", "source": "agent-architect", "target": "agent-coder-haiku" },
+              { "id": "e-arch-codex", "source": "agent-architect", "target": "agent-coder-codex" },
+              { "id": "e-po-sonnet", "source": "agent-product-owner", "target": "agent-coder-sonnet" },
+              { "id": "e-po-opus", "source": "agent-product-owner", "target": "agent-coder-opus" },
+              { "id": "e-po-haiku", "source": "agent-product-owner", "target": "agent-coder-haiku" },
+              { "id": "e-po-codex", "source": "agent-product-owner", "target": "agent-coder-codex" }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "config_visible": false,
+  "dependencies": {
+    "apps": [
+      {
+        "id": "agents-platform-runners",
+        "version": ">=0.55.0",
+        "required": false,
+        "reason": "Provides the contributes.agents surface — it holds the Agents Platform base URL and identity token, which core does not. The floor matters twice over: 0.55.0 is the first version that can seed an agent_flows entry at all (older ones create the six agents and silently drop the flow, leaving a team with no topology), and it is also the app that ships the aw-agent-coder skill every Coder here references by slug. Non-required on purpose: a declaration that arrives before the provider is HELD and replayed the moment one appears, so this app installs cleanly either way."
+      },
+      {
+        "id": "kb",
+        "version": ">=0.18.0",
+        "required": false,
+        "reason": "Supplies search_knowledge_base, which all three contracts make a mandatory first step. Non-required, but the team is materially worse without it: the KB is what stops the Architect re-deciding something already decided and the PO re-scoping something already shipped."
+      }
+    ]
+  },
+  "migrations": {}
+}
