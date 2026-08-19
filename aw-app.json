@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "devteam",
   "name": "Dev Team",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.",
   "tier": "inprocess",
   "requires_ui_refresh": false,
@@ -64,9 +64,9 @@
         {
           "slug": "qas",
           "name": "QAs",
-          "description": "QA Engineers — the review lane. Same Dev Team rules, but they decide whether what came out is what was asked for, and they never fix it themselves.",
+          "description": "QA Engineers \u2014 the review lane. Same Dev Team rules, but they decide whether what came out is what was asked for, and they never fix it themselves.",
           "instructions_file": "prompts/qa-group.md",
-          "capabilities": "QA reviewers — validate a finished Kanban task's delivery against its requirements and decide the card's next status (done / ready to deploy / need human). Hand off review and verification tasks here — never implementation.",
+          "capabilities": "QA reviewers \u2014 validate a finished Kanban task's delivery against its requirements and decide the card's next status (done / ready to deploy / need human). Hand off review and verification tasks here \u2014 never implementation.",
           "kanban_target_status": "running"
         }
       ],
