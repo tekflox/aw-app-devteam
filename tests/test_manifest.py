@@ -62,18 +62,58 @@ def test_ships_the_whole_team_the_app_is_named_for(spec):
     assert {"qa-sonnet", "qa-haiku"} <= slugs
 
 
-def test_the_qa_agents_are_deliberately_not_in_the_flow(spec):
-    """Shipping an agent and wiring it into the topology are separate
-    decisions, and this app only gets to make the first one.
+def test_qa_sits_where_its_own_skill_says_it_does(spec):
+    """aw-agent-qa tells those agents they are 'connected to Source, the
+    Product Owner, and every Coder including the UX Coder'. Same rule as
+    the UX Coder below: the app only asserts a position a contract already
+    states, and the skill is the thing the agent actually reads — so if the
+    graph disagrees, the graph is the bug.
 
-    Nothing documents QA as part of the software-engineering flow — unlike
-    the UX Coder, whose own skill states its position. An app that invents
-    a topology its contracts never described is guessing at how a team
-    works and then teaching that guess to every agent in the graph, since
-    an enabled flow injects the adjacency list into their prompts.
+    The adjacency is what makes 'QA reviews, QA never fixes' workable. An
+    enabled flow injects it into every member's prompt at dispatch; without
+    the edge, a QA that rejects a delivery has nowhere to send it back to
+    and the card stalls in review with nobody able to pick it up.
+
+    They are wired as a *group* node, not two agent nodes: one box instead
+    of fourteen edges, and a third QA model variant joins by being given
+    group_slug 'qas' rather than by somebody redrawing the graph.
     """
-    wired = {n.get("agent_slug") for n in spec["agent_flows"][0]["graph"]["nodes"]}
-    assert not ({"qa-sonnet", "qa-haiku"} & wired)
+    flow = spec["agent_flows"][0]
+    qa_group = [n for n in flow["graph"]["nodes"]
+                if n["type"] == "group" and n.get("group_slug") == "qas"]
+    assert len(qa_group) == 1, "the QAs group belongs in the flow exactly once"
+    node_id = qa_group[0]["id"]
+
+    by_id = {n["id"]: n for n in flow["graph"]["nodes"]}
+    adjacent = set()
+    for e in flow["graph"]["edges"]:
+        if e["source"] == node_id:
+            adjacent.add(e["target"])
+        elif e["target"] == node_id:
+            adjacent.add(e["source"])
+    assert "source" in adjacent
+    reachable = {by_id[a].get("agent_slug") for a in adjacent}
+    assert {"product-owner", "coder-sonnet", "coder-opus", "coder-haiku",
+            "coder-codex", "ux-coder-sonnet"} <= reachable
+
+    # ...and both QA agents are actually in the group the node names, or it
+    # expands to nobody and draws a box connected to nothing.
+    members = {a["slug"] for a in spec["agents"] if a["group_slug"] == "qas"}
+    assert members == {"qa-sonnet", "qa-haiku"}
+
+
+def test_every_flow_group_node_names_a_group_this_app_declares(spec):
+    """Same join as the agent-node test below, for the other node type.
+
+    A group node whose group_slug matches nothing expands to an empty
+    member list — silently, like the agent case: a box wired to the whole
+    team that hands off to nobody.
+    """
+    declared = {g["slug"] for g in spec["groups"]}
+    for flow in spec["agent_flows"]:
+        for node in flow["graph"]["nodes"]:
+            if node["type"] == "group":
+                assert node["group_slug"] in declared, node["id"]
 
 
 def test_the_ux_coder_sits_where_its_own_skill_says_it_does(spec):
@@ -133,6 +173,27 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
              if n["type"] == "agent"}
     assert wired == {"product-owner", "architect", "coder-sonnet", "coder-opus",
                      "coder-haiku", "coder-codex", "ux-coder-sonnet"}
+    grouped = {n["group_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
+               if n["type"] == "group"}
+    assert grouped == {"qas"}
+
+
+def test_no_declaration_marks_a_card_finished_on_dispatch(spec):
+    """kanban_target_status is applied when a run is DISPATCHED, not when it
+    finishes (agents-platform core/executor.py::_auto_set_kanban_status —
+    'move a Kanban card's Status before its agent's run actually starts').
+
+    So a terminal status here would mark the card finished the moment an
+    agent picked it up, before it had done anything. Done is QA's verdict,
+    reached at the end through set_qa_status — never a side effect of
+    someone starting work. Guarding it as a test because the field reads
+    like an on-completion setting and the older hand-built config on the
+    legacy platform did set the coders to 'done'.
+    """
+    terminal = {"done", "ready_to_deploy", "auto_resolved", "archived"}
+    for kind in ("agents", "groups"):
+        for entry in spec[kind]:
+            assert entry.get("kanban_target_status") not in terminal, entry["slug"]
 
 
 def test_the_flow_has_exactly_one_source_and_it_is_called_source(spec):

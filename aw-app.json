@@ -60,6 +60,14 @@
           "description": "Product Owner, Architect and the Coder family \u2014 the agents that take a request from 'somebody wants this' to 'this is merged'.",
           "instructions_file": "prompts/group.md",
           "capabilities": "Scopes, designs, implements and verifies changes to a real codebase. Reads the knowledge base before deciding anything, works against the repo the run's cwd points at, and reports what actually changed."
+        },
+        {
+          "slug": "qas",
+          "name": "QAs",
+          "description": "QA Engineers — the review lane. Same Dev Team rules, but they decide whether what came out is what was asked for, and they never fix it themselves.",
+          "instructions_file": "prompts/qa-group.md",
+          "capabilities": "QA reviewers — validate a finished Kanban task's delivery against its requirements and decide the card's next status (done / ready to deploy / need human). Hand off review and verification tasks here — never implementation.",
+          "kanban_target_status": "running"
         }
       ],
       "agents": [
@@ -71,6 +79,7 @@
           "model_slug": "claude-runner-sonnet",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "running",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -93,6 +102,7 @@
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "running",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -114,6 +124,7 @@
           "model_slug": "claude-runner-haiku",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "running",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -135,6 +146,7 @@
           "model_slug": "codex-runner-gpt-5",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "running",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -156,6 +168,7 @@
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "planned",
           "skill_slugs": [
             "aw-agent-product-owner"
           ],
@@ -178,6 +191,7 @@
           "model_slug": "claude-runner-sonnet",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "running",
           "skill_slugs": [
             "aw-agent-ux-coder"
           ],
@@ -198,7 +212,7 @@
           "system_prompt_file": "prompts/qa.md",
           "model_slug": "claude-runner-sonnet",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
+          "group_slug": "qas",
           "skill_slugs": [
             "aw-agent-qa"
           ],
@@ -219,7 +233,7 @@
           "system_prompt_file": "prompts/qa.md",
           "model_slug": "claude-runner-haiku",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
+          "group_slug": "qas",
           "skill_slugs": [
             "aw-agent-qa"
           ],
@@ -241,6 +255,7 @@
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
+          "kanban_target_status": "planned",
           "skill_slugs": [
             "aw-agent-architect"
           ],
@@ -260,7 +275,7 @@
         {
           "slug": "software-engineering",
           "name": "Agents Flow: Software Engineering",
-          "description": "How a request becomes shipped code: it arrives at Source, the Product Owner decides what it actually is and whether it's worth doing, the Architect decides how it should be shaped, and the Coder family implements it. UX Coder hangs off Source and the PO directly \u2014 that placement is not a preference, it is what aw-agent-ux-coder already tells that agent about itself. Every edge is two-way: a design that turns out to be expensive is a scope conversation, and a coder with a genuine product question routes it back to the PO instead of guessing. The QA agents are deliberately NOT nodes here \u2014 nothing documents them as part of this flow, and an app should not invent a topology the contracts never described.",
+          "description": "How a request becomes shipped code: it arrives at Source, the Product Owner decides what it actually is and whether it's worth doing, the Architect decides how it should be shaped, and the Coder family implements it. UX Coder hangs off Source and the PO directly \u2014 that placement is not a preference, it is what aw-agent-ux-coder already tells that agent about itself. Every edge is two-way: a design that turns out to be expensive is a scope conversation, and a coder with a genuine product question routes it back to the PO instead of guessing. The QAs group closes the loop: every builder edges into it, and because adjacency is two-way a rejected delivery routes straight back to whoever built it \u2014 which is what lets QA review without ever fixing. That placement is documented in aw-agent-qa, the skill those agents actually read; the graph is the bug if the two disagree.",
           "enabled": true,
           "graph": {
             "nodes": [
@@ -342,6 +357,16 @@
                   "x": 300,
                   "y": 60
                 }
+              },
+              {
+                "id": "group-qas",
+                "type": "group",
+                "group_slug": "qas",
+                "label": "QAs",
+                "position": {
+                  "x": 1140,
+                  "y": 260
+                }
               }
             ],
             "edges": [
@@ -404,6 +429,41 @@
                 "id": "e-po-ux",
                 "source": "agent-product-owner",
                 "target": "agent-ux-coder-sonnet"
+              },
+              {
+                "id": "e-source-qas",
+                "source": "source",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-product-owner-qas",
+                "source": "agent-product-owner",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-coder-sonnet-qas",
+                "source": "agent-coder-sonnet",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-coder-opus-qas",
+                "source": "agent-coder-opus",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-coder-haiku-qas",
+                "source": "agent-coder-haiku",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-coder-codex-qas",
+                "source": "agent-coder-codex",
+                "target": "group-qas"
+              },
+              {
+                "id": "e-agent-ux-coder-sonnet-qas",
+                "source": "agent-ux-coder-sonnet",
+                "target": "group-qas"
               }
             ]
           }

@@ -18,13 +18,14 @@ Installs the agents that take a request from "somebody wants this" to
 …wired together by the **Agents Flow: Software Engineering**:
 
 ```
-        ┌──── UX Coder
-        │        ↑
-Source → Product Owner → Architect → Coder ×4
-              └──────── (and back) ──────┘
+        ┌──── UX Coder ──────────────────┐
+        │        ↑                       ↓
+Source → Product Owner → Architect → Coder ×4 → QAs
+   │          └──────── (and back) ──────┘       ↑
+   └───────────────────────────────────────────-─┘
 ```
 
-Two edges there are load-bearing, not decoration:
+Three edges there are load-bearing, not decoration:
 
 - **Every Coder connects straight to the Product Owner.** A coder that
   hits a genuine product question mid-task should route it back rather
@@ -36,23 +37,43 @@ Two edges there are load-bearing, not decoration:
   `tests/test_manifest.py` asserts the graph agrees with the skill. The
   skill is what the agent actually reads; if the two disagree, the graph
   is the bug.
+- **Every builder edges into QAs, and adjacency is two-way.** That is what
+  makes "QA reviews, QA never fixes" workable: a QA holding a broken
+  delivery has somewhere to send it, so it never has to repair the thing
+  it was reviewing just to keep the card moving.
 
-### The two QA agents are shipped but NOT in the flow
+### The QA lane
 
-That is deliberate, and it is the rule this app follows: **shipping an
-agent and wiring it into a topology are separate decisions, and an app
-only gets to make the first one.**
+The two QA agents are a **group node**, not two agent nodes — one box
+instead of fourteen edges, and a third model variant joins the flow by
+being given `group_slug: "qas"` rather than by somebody redrawing the
+graph. They sit in their own group for a second reason: `kanban_target_status`
+is per-group, and the review lane's is not the build lane's.
 
-An enabled flow injects the adjacency list into every member's prompt at
-dispatch time — so adding a node is not bookkeeping, it is telling that
-agent how the team works. The UX Coder is in the graph because its own
-contract states its position. Nothing documents QA as part of this flow,
-so the app does not invent one. Draw it in the flow editor if you want it,
-which is also the only way it survives: seeding never updates an existing
-flow.
+They are in the graph on the same terms as the UX Coder — because
+`aw-agent-qa` states that position, and `tests/test_manifest.py` asserts
+the graph agrees with the skill. The rule this app follows has not
+changed: **it only asserts a position a contract already documents.** Until
+2026-08-19 no contract documented one, so the app shipped the agents and
+left the topology out; the skill now says where QA sits, so the manifest
+may say it too.
 
-QA reviews and QA never fixes — a QA that quietly repaired what it was
-reviewing would leave the delivery with no independent check at all.
+That gap was not free while it lasted. The agents existed, carried the
+right skill, and were unreachable — a card that finished development
+stopped dead, because nothing in any prompt told a coder that a QA was
+there to hand to.
+
+### Nothing here marks a card finished on dispatch
+
+`kanban_target_status` is applied when a run is **dispatched**, not when it
+finishes (agents-platform `core/executor.py::_auto_set_kanban_status`). So
+the build lane sets `planned` (PO, Architect) and `running` (Coders, UX
+Coder), the QA lane sets `running`, and nothing sets `done`.
+
+Done is QA's verdict, reached at the end through `set_qa_status` — never a
+side effect of somebody starting work. The field reads like an
+on-completion setting and the older hand-built config on the legacy
+platform did set the coders to `done`, so a test guards it.
 
 ## Why an app instead of clicking six times
 
