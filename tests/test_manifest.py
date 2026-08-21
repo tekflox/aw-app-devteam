@@ -202,6 +202,28 @@ def test_the_doc_writer_is_wired_to_everything_except_qa(spec):
     assert not ({"qa-sonnet", "qa-haiku"} & reachable)
 
 
+def test_the_code_reviewer_sits_beside_qa_not_inside_it(spec):
+    """aw-agent-code-reviewer states the position: Source and the Coders.
+
+    It is NOT in the qas group and NOT wired to it, and that separation is
+    the reason the agent exists at all. QA judges whether the delivery
+    matches the request; the reviewer judges whether the code is correct.
+    Folding one into the other loses whichever question is asked second —
+    a change can pass QA and still be wrong, and vice versa.
+
+    It is an agent node rather than a group member because it runs on one
+    model today. If a second variant appears, it becomes a group, the same
+    way the Coders did.
+    """
+    reachable = _neighbours(spec, agent_slug="code-reviewer-sonnet")
+    assert "source" in reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+    assert not ({"qa-sonnet", "qa-haiku"} & reachable)
+
+    reviewer = next(a for a in spec["agents"] if a["slug"] == "code-reviewer-sonnet")
+    assert reviewer["group_slug"] != "qas"
+
+
 def test_every_group_prompt_carries_the_shared_team_rules(spec):
     """Group instructions are prepended to a member's own system prompt, and
     an agent belongs to exactly one group — so the three rules every Dev Team
@@ -257,13 +279,14 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
     Membership is by node, and a node is either one agent or one group. The
     agents wired individually are the ones whose position is their own — the
     PO and the Architect are single roles, the UX Coder skips a hop the
-    Coders group does not, the Debugger enters ahead of scoping, and the Doc
-    Writer is the one role that bypasses QA entirely.
+    Coders group does not, the Debugger enters ahead of scoping, the Doc
+    Writer is the one role that bypasses QA entirely, and the Code Reviewer
+    sits beside QA rather than in it.
     """
     wired = {n["agent_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
              if n["type"] == "agent"}
     assert wired == {"product-owner", "architect", "ux-coder-sonnet",
-                     "debugger", "doc-writer"}
+                     "debugger", "doc-writer", "code-reviewer-sonnet"}
     grouped = {n["group_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
                if n["type"] == "group"}
     assert grouped == {"coders", "qas"}
@@ -344,11 +367,12 @@ def test_skill_slugs_are_either_shipped_here_or_come_from_a_declared_dependency(
     agent still runs, just with no contract — which reads as a bad model,
     not a missing file."""
     shipped = {s["id"] for s in manifest["contributes"]["skills"]}
-    # These five are shipped by aw-app-agents-platform-runners, which this
+    # These six are shipped by aw-app-agents-platform-runners, which this
     # app declares a versioned dependency on precisely so the contracts exist
     # wherever the agents referencing them do.
     from_dependency = {"aw-agent-coder", "aw-agent-qa", "aw-agent-ux-coder",
-                       "aw-agent-doc-writer", "aw-agent-debugger"}
+                       "aw-agent-doc-writer", "aw-agent-debugger",
+                       "aw-agent-code-reviewer"}
     depends_on = {d["id"] for d in manifest["dependencies"]["apps"]}
     assert "agents-platform-runners" in depends_on
     for agent in spec["agents"]:

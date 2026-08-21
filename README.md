@@ -13,6 +13,7 @@ Installs the agents that take a request from "somebody wants this" to
 | **Coder - GPT5** | Codex / GPT-5 | `aw-agent-coder` |
 | **UX Coder - Sonnet** | Sonnet | `aw-agent-ux-coder` |
 | **Debugger** | Sonnet | `aw-agent-debugger` |
+| **Code Reviewer - Sonnet** | Sonnet | `aw-agent-code-reviewer` |
 | **Doc Writer** | Sonnet | `aw-agent-doc-writer` |
 | **QA - Sonnet** | Sonnet | `aw-agent-qa` |
 | **QA - Haiku** | Haiku | `aw-agent-qa` |
@@ -82,6 +83,21 @@ Both agents already existed on this platform as ungoverned rows — created
 by hand, declared by no app, so a fresh workspace got neither. They are
 declared here now. Seeding is create-if-absent by slug, so adopting them
 does not overwrite anything an existing install has tuned.
+
+### Code Reviewer sits beside QA, not inside it
+
+The team had QA and called that review. It isn't. QA judges whether the
+delivery matches what was asked — a change can satisfy that and still be
+wrong. `code-reviewer-sonnet` judges the code: off-by-one, a changed
+return shape with a caller still on the old one, a retry with no ceiling.
+Folding either into the other loses whichever question gets asked second.
+
+Its contract forbids `set_qa_status` outright, because a code review that
+moves the card to Done has replaced the acceptance check with a style
+opinion and nobody would notice.
+
+It is an agent node, not a group, because it runs on one model today. If a
+second variant appears it becomes a group, the same way the Coders did.
 
 ### Three groups, because an agent only gets one
 

@@ -319,6 +319,29 @@
           "hidden_from_flow": false,
           "icon": "book",
           "color": "#a371f7"
+        },
+        {
+          "slug": "code-reviewer-sonnet",
+          "name": "Code Reviewer - Sonnet",
+          "description": "Reads a diff for correctness bugs and reuse/simplification cleanups, verifies each finding against the real code before reporting it, and hands them back to the coder. Reviews the code; QA reviews the delivery.",
+          "system_prompt_file": "prompts/code-reviewer.md",
+          "model_slug": "claude-runner-sonnet",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "kanban_target_status": "running",
+          "skill_slugs": [
+            "aw-agent-code-reviewer"
+          ],
+          "capabilities": "Reviews a change for defects in the code itself \u2014 correctness, failure modes that only show in production, duplicated logic, tests that would not have caught the bug \u2014 with a concrete failure behind every finding. Never edits what it reviews.",
+          "use_cases": [
+            "review this diff",
+            "review this PR before we merge",
+            "is this change correct",
+            "what will break when this ships"
+          ],
+          "hidden_from_flow": false,
+          "icon": "search-code",
+          "color": "#58a6ff"
         }
       ],
       "agent_flows": [
@@ -407,6 +430,16 @@
                   "x": 1140,
                   "y": 430
                 }
+              },
+              {
+                "id": "agent-code-reviewer-sonnet",
+                "type": "agent",
+                "agent_slug": "code-reviewer-sonnet",
+                "label": "Code Reviewer - Sonnet",
+                "position": {
+                  "x": 1140,
+                  "y": 80
+                }
               }
             ],
             "edges": [
@@ -479,6 +512,16 @@
                 "id": "e-coders-doc-writer",
                 "source": "group-coders",
                 "target": "agent-doc-writer"
+              },
+              {
+                "id": "e-source-code-reviewer-sonnet",
+                "source": "source",
+                "target": "agent-code-reviewer-sonnet"
+              },
+              {
+                "id": "e-coders-code-reviewer-sonnet",
+                "source": "group-coders",
+                "target": "agent-code-reviewer-sonnet"
               }
             ]
           }
