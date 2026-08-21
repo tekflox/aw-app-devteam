@@ -173,6 +173,35 @@ def test_the_coders_are_one_group_node_sitting_between_design_and_review(spec):
     assert {"qa-sonnet", "qa-haiku"} <= reachable
 
 
+def test_the_debugger_enters_ahead_of_scoping_and_hands_down_to_the_coders(spec):
+    """prompts/debugger.md states this position, and unlike every other role
+    here that contract is the prompt itself — no aw-agent-debugger skill
+    exists, so the app owns it outright rather than mirroring someone else's.
+
+    Source, not the Product Owner, because "what is actually broken" has to
+    be answered before anyone can scope what to do about it. A bug report
+    routed through scoping first is being triaged on a symptom.
+    """
+    reachable = _neighbours(spec, agent_slug="debugger")
+    assert "source" in reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+
+
+def test_the_doc_writer_is_wired_to_everything_except_qa(spec):
+    """aw-agent-doc-writer states the position AND the exclusion, and the
+    exclusion is the load-bearing half: docs-only work completes straight to
+    Done, so there is no review hop to route through.
+
+    An edge to QA here would put every docs card into a review lane its own
+    contract says it skips — and the contradiction would only show up as
+    cards mysteriously stuck one status short of Done.
+    """
+    reachable = _neighbours(spec, agent_slug="doc-writer")
+    assert "source" in reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+    assert not ({"qa-sonnet", "qa-haiku"} & reachable)
+
+
 def test_every_group_prompt_carries_the_shared_team_rules(spec):
     """Group instructions are prepended to a member's own system prompt, and
     an agent belongs to exactly one group — so the three rules every Dev Team
@@ -226,13 +255,15 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
     seeding never updates an existing flow.
 
     Membership is by node, and a node is either one agent or one group. The
-    three agents wired individually are the ones whose position is their own
-    — the PO and the Architect are single roles, and the UX Coder skips a
-    hop the Coders group does not.
+    agents wired individually are the ones whose position is their own — the
+    PO and the Architect are single roles, the UX Coder skips a hop the
+    Coders group does not, the Debugger enters ahead of scoping, and the Doc
+    Writer is the one role that bypasses QA entirely.
     """
     wired = {n["agent_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
              if n["type"] == "agent"}
-    assert wired == {"product-owner", "architect", "ux-coder-sonnet"}
+    assert wired == {"product-owner", "architect", "ux-coder-sonnet",
+                     "debugger", "doc-writer"}
     grouped = {n["group_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
                if n["type"] == "group"}
     assert grouped == {"coders", "qas"}
@@ -313,10 +344,11 @@ def test_skill_slugs_are_either_shipped_here_or_come_from_a_declared_dependency(
     agent still runs, just with no contract — which reads as a bad model,
     not a missing file."""
     shipped = {s["id"] for s in manifest["contributes"]["skills"]}
-    # These three are shipped by aw-app-agents-platform-runners, which this
+    # These four are shipped by aw-app-agents-platform-runners, which this
     # app declares a versioned dependency on precisely so the contracts exist
     # wherever the agents referencing them do.
-    from_dependency = {"aw-agent-coder", "aw-agent-qa", "aw-agent-ux-coder"}
+    from_dependency = {"aw-agent-coder", "aw-agent-qa", "aw-agent-ux-coder",
+                       "aw-agent-doc-writer"}
     depends_on = {d["id"] for d in manifest["dependencies"]["apps"]}
     assert "agents-platform-runners" in depends_on
     for agent in spec["agents"]:

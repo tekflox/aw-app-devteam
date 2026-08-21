@@ -273,6 +273,50 @@
           "hidden_from_flow": false,
           "icon": "layers",
           "color": "#2dd4bf"
+        },
+        {
+          "slug": "debugger",
+          "name": "Debugger",
+          "description": "Finds out why before anybody changes anything \u2014 states a falsifiable hypothesis, runs the smallest experiment that could kill it, and reports a root cause with the evidence. Diagnoses; hands the fix to a Coder.",
+          "system_prompt_file": "prompts/debugger.md",
+          "model_slug": "claude-runner-sonnet",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "kanban_target_status": "running",
+          "skill_slugs": [],
+          "capabilities": "Diagnoses a symptom to its root cause in the real code \u2014 failing test, wrong output, crash, works-here-not-there \u2014 and reports the evidence plus a proposed fix for a coder to implement.",
+          "use_cases": [
+            "why does this test fail",
+            "this crashes and I don't know why",
+            "find the root cause of this bug",
+            "it works locally but not in the container"
+          ],
+          "hidden_from_flow": false,
+          "icon": "bug",
+          "color": "#d29922"
+        },
+        {
+          "slug": "doc-writer",
+          "name": "Doc Writer",
+          "description": "Writes up what the team built \u2014 README, ADR, module docs, API reference \u2014 grounded in the code as it actually is. The one role whose finished work completes straight to Done instead of going through QA.",
+          "system_prompt_file": "prompts/doc-writer.md",
+          "model_slug": "claude-runner-sonnet",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "kanban_target_status": "running",
+          "skill_slugs": [
+            "aw-agent-doc-writer"
+          ],
+          "capabilities": "Produces documentation for an existing change or module, read from the code rather than from the request \u2014 README, ADR, module docs, API reference.",
+          "use_cases": [
+            "document what we just built",
+            "write a README for this module",
+            "write an ADR for this decision",
+            "document this API"
+          ],
+          "hidden_from_flow": false,
+          "icon": "book",
+          "color": "#a371f7"
         }
       ],
       "agent_flows": [
@@ -341,6 +385,26 @@
                   "x": 860,
                   "y": 260
                 }
+              },
+              {
+                "id": "agent-debugger",
+                "type": "agent",
+                "agent_slug": "debugger",
+                "label": "Debugger",
+                "position": {
+                  "x": 580,
+                  "y": 430
+                }
+              },
+              {
+                "id": "agent-doc-writer",
+                "type": "agent",
+                "agent_slug": "doc-writer",
+                "label": "Doc Writer",
+                "position": {
+                  "x": 1140,
+                  "y": 430
+                }
               }
             ],
             "edges": [
@@ -393,6 +457,26 @@
                 "id": "e-ux-coder-sonnet-qas",
                 "source": "agent-ux-coder-sonnet",
                 "target": "group-qas"
+              },
+              {
+                "id": "e-source-debugger",
+                "source": "source",
+                "target": "agent-debugger"
+              },
+              {
+                "id": "e-debugger-coders",
+                "source": "agent-debugger",
+                "target": "group-coders"
+              },
+              {
+                "id": "e-source-doc-writer",
+                "source": "source",
+                "target": "agent-doc-writer"
+              },
+              {
+                "id": "e-coders-doc-writer",
+                "source": "group-coders",
+                "target": "agent-doc-writer"
               }
             ]
           }

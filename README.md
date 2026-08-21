@@ -12,6 +12,8 @@ Installs the agents that take a request from "somebody wants this" to
 | **Coder - Haiku** | Haiku | `aw-agent-coder` |
 | **Coder - GPT5** | Codex / GPT-5 | `aw-agent-coder` |
 | **UX Coder - Sonnet** | Sonnet | `aw-agent-ux-coder` |
+| **Debugger** | Sonnet | `prompts/debugger.md` (no skill — see below) |
+| **Doc Writer** | Sonnet | `aw-agent-doc-writer` |
 | **QA - Sonnet** | Sonnet | `aw-agent-qa` |
 | **QA - Haiku** | Haiku | `aw-agent-qa` |
 
@@ -21,14 +23,17 @@ Installs the agents that take a request from "somebody wants this" to
         ┌──── UX Coder ─────────────────┐
         │        ↑                      ↓
 Source → Product Owner → Architect → [Coders] → [QAs]
-   │          └──────── (and back) ─────┘         ↑
-   └────────────────────────────────────────────-─┘
+   │  │       └──────── (and back) ─────┘  │      ↑
+   │  └──────────────────────────────────────────-┘
+   ├──→ Debugger ───────────────────────┘  │
+   └──→ Doc Writer ◄───────────────────────┘
 ```
 
-Six nodes, not nine: `[Coders]` and `[QAs]` are **group** nodes. Three
-agents are wired individually because their position is their own — the
-PO and the Architect are single roles, and the UX Coder skips a hop the
-Coders group does not.
+Eight nodes, not eleven: `[Coders]` and `[QAs]` are **group** nodes. The
+rest are wired individually because their position is their own — the PO
+and the Architect are single roles, the UX Coder skips a hop the Coders
+group does not, the Debugger enters ahead of scoping, and the Doc Writer
+is the one role that bypasses QA entirely.
 
 That is not a drawing convenience. A group node expands to its members at
 dispatch, so a fifth Coder model variant joins the flow by being given
@@ -52,6 +57,30 @@ Three edges there are load-bearing, not decoration:
   makes "QA reviews, QA never fixes" workable: a QA holding a broken
   delivery has somewhere to send it, so it never has to repair the thing
   it was reviewing just to keep the card moving.
+
+### The two ends nobody had wired
+
+**Debugger** hangs off Source, not the Product Owner. "What is actually
+broken" has to be answered before anyone can scope what to do about it —
+a bug report routed through scoping first is being triaged on a symptom.
+It hands the root cause down to the Coders; it does not write the fix.
+
+It is also the only role here with **no skill file**: there is no
+`aw-agent-debugger`, so `prompts/debugger.md` is the contract outright
+rather than a pointer to one. That is a deliberate exception to how every
+other agent in this app is wired, not an oversight.
+
+**Doc Writer** hangs off Source and the Coders, and is deliberately **not
+connected to QA**. Its own contract says docs-only work completes straight
+to Done, so there is no review hop to route through; an edge there would
+put every docs card into a lane its contract skips, and the contradiction
+would surface only as cards stuck one status short of Done. A test asserts
+the absence.
+
+Both agents already existed on this platform as ungoverned rows — created
+by hand, declared by no app, so a fresh workspace got neither. They are
+declared here now. Seeding is create-if-absent by slug, so adopting them
+does not overwrite anything an existing install has tuned.
 
 ### Three groups, because an agent only gets one
 
