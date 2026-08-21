@@ -78,21 +78,8 @@ def test_qa_sits_where_its_own_skill_says_it_does(spec):
     of fourteen edges, and a third QA model variant joins by being given
     group_slug 'qas' rather than by somebody redrawing the graph.
     """
-    flow = spec["agent_flows"][0]
-    qa_group = [n for n in flow["graph"]["nodes"]
-                if n["type"] == "group" and n.get("group_slug") == "qas"]
-    assert len(qa_group) == 1, "the QAs group belongs in the flow exactly once"
-    node_id = qa_group[0]["id"]
-
-    by_id = {n["id"]: n for n in flow["graph"]["nodes"]}
-    adjacent = set()
-    for e in flow["graph"]["edges"]:
-        if e["source"] == node_id:
-            adjacent.add(e["target"])
-        elif e["target"] == node_id:
-            adjacent.add(e["source"])
-    assert "source" in adjacent
-    reachable = {by_id[a].get("agent_slug") for a in adjacent}
+    reachable = _neighbours(spec, group_slug="qas")
+    assert "source" in reachable
     assert {"product-owner", "coder-sonnet", "coder-opus", "coder-haiku",
             "coder-codex", "ux-coder-sonnet"} <= reachable
 
@@ -100,6 +87,41 @@ def test_qa_sits_where_its_own_skill_says_it_does(spec):
     # expands to nobody and draws a box connected to nothing.
     members = {a["slug"] for a in spec["agents"] if a["group_slug"] == "qas"}
     assert members == {"qa-sonnet", "qa-haiku"}
+
+
+def _neighbours(spec, *, agent_slug=None, group_slug=None):
+    """Who a node can hand off to, named by agent slug, the way the platform
+    itself resolves it (agents-platform core/executor.py::_agents_flow_context).
+
+    Two things that trip up a naive read of the graph and are asserted on
+    here because the executor does them: edges are **undirected** for the
+    purpose of the adjacency list injected into a prompt, and a **group node
+    expands to its members**. A test that only matched `agent_slug` on the
+    far end of an edge would call the Coders unreachable the moment they
+    were collapsed into one box, which is exactly backwards.
+    """
+    flow = spec["agent_flows"][0]
+    by_id = {n["id"]: n for n in flow["graph"]["nodes"]}
+    mine = {nid for nid, n in by_id.items()
+            if (agent_slug and n.get("agent_slug") == agent_slug)
+            or (group_slug and n.get("group_slug") == group_slug)}
+    assert len(mine) == 1, f"expected exactly one node for {agent_slug or group_slug}"
+
+    def expand(node):
+        if node["type"] == "agent":
+            return {node["agent_slug"]}
+        if node["type"] == "group":
+            return {a["slug"] for a in spec["agents"]
+                    if a["group_slug"] == node["group_slug"]}
+        return {node["type"]}  # the source node has no agent behind it
+
+    out = set()
+    for e in flow["graph"]["edges"]:
+        far = e["target"] if e["source"] in mine else (
+            e["source"] if e["target"] in mine else None)
+        if far is not None:
+            out |= expand(by_id[far])
+    return out
 
 
 def test_every_flow_group_node_names_a_group_this_app_declares(spec):
@@ -120,18 +142,52 @@ def test_the_ux_coder_sits_where_its_own_skill_says_it_does(spec):
     """aw-agent-ux-coder tells the agent it is 'connected to Source and the
     Product Owner'. If the graph disagrees, the skill is lying to it — and
     the skill is the thing the agent actually reads."""
-    flow = spec["agent_flows"][0]
-    ux = next(n["id"] for n in flow["graph"]["nodes"]
-              if n.get("agent_slug") == "ux-coder-sonnet")
-    by_id = {n["id"]: n for n in flow["graph"]["nodes"]}
-    adjacent = set()
-    for e in flow["graph"]["edges"]:
-        if e["source"] == ux:
-            adjacent.add(e["target"])
-        elif e["target"] == ux:
-            adjacent.add(e["source"])
-    assert "source" in adjacent
-    assert any(by_id[a].get("agent_slug") == "product-owner" for a in adjacent)
+    reachable = _neighbours(spec, agent_slug="ux-coder-sonnet")
+    assert "source" in reachable
+    assert "product-owner" in reachable
+    # ...and NOT the Architect: a prototype that waits on an architecture
+    # decision has stopped being a prototype. Skipping that hop is the whole
+    # reason this agent is wired separately from the Coders group.
+    assert "architect" not in reachable
+
+
+def test_the_coders_are_one_group_node_sitting_between_design_and_review(spec):
+    """The build lane, as a group node for the same reason QA is one: a
+    fifth model variant joins the flow by being given group_slug 'coders',
+    not by somebody opening the editor and drawing four more edges.
+
+    Its two ends are what the other contracts already state — the Architect
+    hands a design down (and the PO reaches it directly, because a coder
+    with a genuine product question routes back rather than guessing), and
+    the finished work goes to QA.
+    """
+    members = {a["slug"] for a in spec["agents"] if a["group_slug"] == "coders"}
+    assert members == {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"}
+    # The UX Coder is deliberately NOT here — see the test above; it would
+    # inherit the Architect edge this group has and lose the one thing its
+    # own contract promises it.
+    assert "ux-coder-sonnet" not in members
+
+    reachable = _neighbours(spec, group_slug="coders")
+    assert {"architect", "product-owner"} <= reachable
+    assert {"qa-sonnet", "qa-haiku"} <= reachable
+
+
+def test_every_group_prompt_carries_the_shared_team_rules(spec):
+    """Group instructions are prepended to a member's own system prompt, and
+    an agent belongs to exactly one group — so the three rules every Dev Team
+    agent shares have to be restated in each group's prompt or they silently
+    stop reaching whoever moved out of 'devteam'.
+
+    That is not hypothetical: splitting the QA and Coder lanes out of the
+    single original group is exactly the move that would have dropped the
+    mandatory knowledge-base search from six of the nine agents.
+    """
+    for group in spec["groups"]:
+        text = (APP_DIR / group["instructions_file"]).read_text()
+        assert "search_knowledge_base" in text, group["slug"]
+        assert "Report what is true" in text, group["slug"]
+        assert "Hand off rather than guess" in text, group["slug"]
 
 
 def test_every_flow_node_names_an_agent_this_app_declares(spec):
@@ -168,14 +224,24 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
     (see the UX Coder test below); everything else is left for a human to
     draw in the flow editor, which is also the only way it survives —
     seeding never updates an existing flow.
+
+    Membership is by node, and a node is either one agent or one group. The
+    three agents wired individually are the ones whose position is their own
+    — the PO and the Architect are single roles, and the UX Coder skips a
+    hop the Coders group does not.
     """
     wired = {n["agent_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
              if n["type"] == "agent"}
-    assert wired == {"product-owner", "architect", "coder-sonnet", "coder-opus",
-                     "coder-haiku", "coder-codex", "ux-coder-sonnet"}
+    assert wired == {"product-owner", "architect", "ux-coder-sonnet"}
     grouped = {n["group_slug"] for n in spec["agent_flows"][0]["graph"]["nodes"]
                if n["type"] == "group"}
-    assert grouped == {"qas"}
+    assert grouped == {"coders", "qas"}
+
+    # Every agent this app ships still reaches the graph, one way or the
+    # other — shipping an agent nobody can hand off to is the bug this
+    # whole file exists to catch.
+    in_a_wired_group = {a["slug"] for a in spec["agents"] if a["group_slug"] in grouped}
+    assert wired | in_a_wired_group == {a["slug"] for a in spec["agents"]}
 
 
 def test_no_declaration_marks_a_card_finished_on_dispatch(spec):

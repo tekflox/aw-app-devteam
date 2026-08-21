@@ -18,18 +18,29 @@ Installs the agents that take a request from "somebody wants this" to
 …wired together by the **Agents Flow: Software Engineering**:
 
 ```
-        ┌──── UX Coder ──────────────────┐
-        │        ↑                       ↓
-Source → Product Owner → Architect → Coder ×4 → QAs
-   │          └──────── (and back) ──────┘       ↑
-   └───────────────────────────────────────────-─┘
+        ┌──── UX Coder ─────────────────┐
+        │        ↑                      ↓
+Source → Product Owner → Architect → [Coders] → [QAs]
+   │          └──────── (and back) ─────┘         ↑
+   └────────────────────────────────────────────-─┘
 ```
+
+Six nodes, not nine: `[Coders]` and `[QAs]` are **group** nodes. Three
+agents are wired individually because their position is their own — the
+PO and the Architect are single roles, and the UX Coder skips a hop the
+Coders group does not.
+
+That is not a drawing convenience. A group node expands to its members at
+dispatch, so a fifth Coder model variant joins the flow by being given
+`group_slug: "coders"` — nobody opens the editor, and nobody has to
+remember to. It also halves the graph: collapsing the four coder boxes
+took the flow from 19 edges to 10 without removing a single handoff.
 
 Three edges there are load-bearing, not decoration:
 
-- **Every Coder connects straight to the Product Owner.** A coder that
-  hits a genuine product question mid-task should route it back rather
-  than pick silently, and the flow is what tells it who to route to.
+- **Coders connect straight to the Product Owner.** A coder that hits a
+  genuine product question mid-task should route it back rather than pick
+  silently, and the flow is what tells it who to route to.
 - **UX Coder hangs off Source and the PO, skipping the Architect.** A
   prototype that waits on an architecture decision has stopped being a
   prototype. This is not a preference: `aw-agent-ux-coder` already tells
@@ -42,13 +53,23 @@ Three edges there are load-bearing, not decoration:
   delivery has somewhere to send it, so it never has to repair the thing
   it was reviewing just to keep the card moving.
 
-### The QA lane
+### Three groups, because an agent only gets one
 
-The two QA agents are a **group node**, not two agent nodes — one box
-instead of fourteen edges, and a third model variant joins the flow by
-being given `group_slug: "qas"` rather than by somebody redrawing the
-graph. They sit in their own group for a second reason: `kanban_target_status`
-is per-group, and the review lane's is not the build lane's.
+`devteam` (PO, Architect, UX Coder), `coders` (the four model variants),
+`qas` (the two). The split buys two things: a group node per lane in the
+graph, and a per-lane `kanban_target_status` — the review lane's is not
+the build lane's.
+
+It costs one thing, and it is the trap: **`group_slug` is single-valued**,
+so an agent moved into a new group stops seeing the old group's
+instructions entirely. The three rules every Dev Team agent shares — search
+the knowledge base, report what is true, hand off outside your lane — are
+therefore restated in all three prompts, and
+`test_every_group_prompt_carries_the_shared_team_rules` fails the build if
+one of them drifts. Splitting the lanes without that would have silently
+dropped the mandatory knowledge-base search from six of the nine agents.
+
+### The QA lane
 
 They are in the graph on the same terms as the UX Coder — because
 `aw-agent-qa` states that position, and `tests/test_manifest.py` asserts

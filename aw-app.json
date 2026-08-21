@@ -62,6 +62,14 @@
           "capabilities": "Scopes, designs, implements and verifies changes to a real codebase. Reads the knowledge base before deciding anything, works against the repo the run's cwd points at, and reports what actually changed."
         },
         {
+          "slug": "coders",
+          "name": "Coders",
+          "description": "The build lane \u2014 the Coder family across models (Sonnet / Opus / Haiku / GPT-5), same contract, chosen by what the task is worth.",
+          "instructions_file": "prompts/coders-group.md",
+          "capabilities": "Generic coding specialists \u2014 read code before changing it, implement a scoped feature, fix or refactor end to end in the repo the run targets, and verify it before reporting. Hand off any 'write or fix code' task here.",
+          "kanban_target_status": "running"
+        },
+        {
           "slug": "qas",
           "name": "QAs",
           "description": "QA Engineers \u2014 the review lane. Same Dev Team rules, but they decide whether what came out is what was asked for, and they never fix it themselves.",
@@ -78,8 +86,7 @@
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-sonnet",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
-          "kanban_target_status": "running",
+          "group_slug": "coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -101,8 +108,7 @@
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-opus",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
-          "kanban_target_status": "running",
+          "group_slug": "coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -123,8 +129,7 @@
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-haiku",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
-          "kanban_target_status": "running",
+          "group_slug": "coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -145,8 +150,7 @@
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "codex-runner-gpt-5",
           "agent_config_slug": "devteam-config",
-          "group_slug": "devteam",
-          "kanban_target_status": "running",
+          "group_slug": "coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
@@ -309,46 +313,6 @@
                 }
               },
               {
-                "id": "agent-coder-sonnet",
-                "type": "agent",
-                "agent_slug": "coder-sonnet",
-                "label": "Coder - Sonnet",
-                "position": {
-                  "x": 860,
-                  "y": 80
-                }
-              },
-              {
-                "id": "agent-coder-opus",
-                "type": "agent",
-                "agent_slug": "coder-opus",
-                "label": "Coder - Opus",
-                "position": {
-                  "x": 860,
-                  "y": 200
-                }
-              },
-              {
-                "id": "agent-coder-haiku",
-                "type": "agent",
-                "agent_slug": "coder-haiku",
-                "label": "Coder - Haiku",
-                "position": {
-                  "x": 860,
-                  "y": 320
-                }
-              },
-              {
-                "id": "agent-coder-codex",
-                "type": "agent",
-                "agent_slug": "coder-codex",
-                "label": "Coder - GPT5",
-                "position": {
-                  "x": 860,
-                  "y": 440
-                }
-              },
-              {
                 "id": "agent-ux-coder-sonnet",
                 "type": "agent",
                 "agent_slug": "ux-coder-sonnet",
@@ -367,66 +331,46 @@
                   "x": 1140,
                   "y": 260
                 }
+              },
+              {
+                "id": "group-coders",
+                "type": "group",
+                "group_slug": "coders",
+                "label": "Coders",
+                "position": {
+                  "x": 860,
+                  "y": 260
+                }
               }
             ],
             "edges": [
               {
-                "id": "e-source-po",
+                "id": "e-source-product-owner",
                 "source": "source",
                 "target": "agent-product-owner"
               },
               {
-                "id": "e-po-arch",
+                "id": "e-product-owner-architect",
                 "source": "agent-product-owner",
                 "target": "agent-architect"
               },
               {
-                "id": "e-arch-sonnet",
+                "id": "e-architect-coders",
                 "source": "agent-architect",
-                "target": "agent-coder-sonnet"
+                "target": "group-coders"
               },
               {
-                "id": "e-arch-opus",
-                "source": "agent-architect",
-                "target": "agent-coder-opus"
-              },
-              {
-                "id": "e-arch-haiku",
-                "source": "agent-architect",
-                "target": "agent-coder-haiku"
-              },
-              {
-                "id": "e-arch-codex",
-                "source": "agent-architect",
-                "target": "agent-coder-codex"
-              },
-              {
-                "id": "e-po-sonnet",
+                "id": "e-product-owner-coders",
                 "source": "agent-product-owner",
-                "target": "agent-coder-sonnet"
+                "target": "group-coders"
               },
               {
-                "id": "e-po-opus",
-                "source": "agent-product-owner",
-                "target": "agent-coder-opus"
-              },
-              {
-                "id": "e-po-haiku",
-                "source": "agent-product-owner",
-                "target": "agent-coder-haiku"
-              },
-              {
-                "id": "e-po-codex",
-                "source": "agent-product-owner",
-                "target": "agent-coder-codex"
-              },
-              {
-                "id": "e-source-ux",
+                "id": "e-source-ux-coder-sonnet",
                 "source": "source",
                 "target": "agent-ux-coder-sonnet"
               },
               {
-                "id": "e-po-ux",
+                "id": "e-product-owner-ux-coder-sonnet",
                 "source": "agent-product-owner",
                 "target": "agent-ux-coder-sonnet"
               },
@@ -436,32 +380,17 @@
                 "target": "group-qas"
               },
               {
-                "id": "e-agent-product-owner-qas",
+                "id": "e-product-owner-qas",
                 "source": "agent-product-owner",
                 "target": "group-qas"
               },
               {
-                "id": "e-agent-coder-sonnet-qas",
-                "source": "agent-coder-sonnet",
+                "id": "e-coders-qas",
+                "source": "group-coders",
                 "target": "group-qas"
               },
               {
-                "id": "e-agent-coder-opus-qas",
-                "source": "agent-coder-opus",
-                "target": "group-qas"
-              },
-              {
-                "id": "e-agent-coder-haiku-qas",
-                "source": "agent-coder-haiku",
-                "target": "group-qas"
-              },
-              {
-                "id": "e-agent-coder-codex-qas",
-                "source": "agent-coder-codex",
-                "target": "group-qas"
-              },
-              {
-                "id": "e-agent-ux-coder-sonnet-qas",
+                "id": "e-ux-coder-sonnet-qas",
                 "source": "agent-ux-coder-sonnet",
                 "target": "group-qas"
               }
