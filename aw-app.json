@@ -283,7 +283,9 @@
           "agent_config_slug": "devteam-config",
           "group_slug": "devteam",
           "kanban_target_status": "running",
-          "skill_slugs": [],
+          "skill_slugs": [
+            "aw-agent-debugger"
+          ],
           "capabilities": "Diagnoses a symptom to its root cause in the real code \u2014 failing test, wrong output, crash, works-here-not-there \u2014 and reports the evidence plus a proposed fix for a coder to implement.",
           "use_cases": [
             "why does this test fail",

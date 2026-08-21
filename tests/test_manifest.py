@@ -174,9 +174,9 @@ def test_the_coders_are_one_group_node_sitting_between_design_and_review(spec):
 
 
 def test_the_debugger_enters_ahead_of_scoping_and_hands_down_to_the_coders(spec):
-    """prompts/debugger.md states this position, and unlike every other role
-    here that contract is the prompt itself — no aw-agent-debugger skill
-    exists, so the app owns it outright rather than mirroring someone else's.
+    """aw-agent-debugger states this position. Same rule as every other
+    agent here: the app only wires a position some contract already
+    documents, and the skill is what the agent actually reads.
 
     Source, not the Product Owner, because "what is actually broken" has to
     be answered before anyone can scope what to do about it. A bug report
@@ -344,11 +344,11 @@ def test_skill_slugs_are_either_shipped_here_or_come_from_a_declared_dependency(
     agent still runs, just with no contract — which reads as a bad model,
     not a missing file."""
     shipped = {s["id"] for s in manifest["contributes"]["skills"]}
-    # These four are shipped by aw-app-agents-platform-runners, which this
+    # These five are shipped by aw-app-agents-platform-runners, which this
     # app declares a versioned dependency on precisely so the contracts exist
     # wherever the agents referencing them do.
     from_dependency = {"aw-agent-coder", "aw-agent-qa", "aw-agent-ux-coder",
-                       "aw-agent-doc-writer"}
+                       "aw-agent-doc-writer", "aw-agent-debugger"}
     depends_on = {d["id"] for d in manifest["dependencies"]["apps"]}
     assert "agents-platform-runners" in depends_on
     for agent in spec["agents"]:

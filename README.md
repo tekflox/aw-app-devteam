@@ -12,7 +12,7 @@ Installs the agents that take a request from "somebody wants this" to
 | **Coder - Haiku** | Haiku | `aw-agent-coder` |
 | **Coder - GPT5** | Codex / GPT-5 | `aw-agent-coder` |
 | **UX Coder - Sonnet** | Sonnet | `aw-agent-ux-coder` |
-| **Debugger** | Sonnet | `prompts/debugger.md` (no skill — see below) |
+| **Debugger** | Sonnet | `aw-agent-debugger` |
 | **Doc Writer** | Sonnet | `aw-agent-doc-writer` |
 | **QA - Sonnet** | Sonnet | `aw-agent-qa` |
 | **QA - Haiku** | Haiku | `aw-agent-qa` |
@@ -65,10 +65,11 @@ broken" has to be answered before anyone can scope what to do about it —
 a bug report routed through scoping first is being triaged on a symptom.
 It hands the root cause down to the Coders; it does not write the fix.
 
-It is also the only role here with **no skill file**: there is no
-`aw-agent-debugger`, so `prompts/debugger.md` is the contract outright
-rather than a pointer to one. That is a deliberate exception to how every
-other agent in this app is wired, not an oversight.
+Its contract is `aw-agent-debugger`, shipped by
+aw-app-agents-platform-runners alongside the other generic role contracts.
+It did not exist anywhere before 2026-08-21 — not here, not in the
+monolith, where this agent ran on three sentences of inline prompt and
+nothing else.
 
 **Doc Writer** hangs off Source and the Coders, and is deliberately **not
 connected to QA**. Its own contract says docs-only work completes straight
