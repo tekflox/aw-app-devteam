@@ -3,7 +3,7 @@
   "id": "devteam",
   "name": "Dev Team",
   "version": "0.6.0",
-  "description": "The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.",
+  "description": "The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5 / GPT-5.6 Sol) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.",
   "tier": "inprocess",
   "requires_ui_refresh": false,
   "category": "Runnables",
@@ -163,6 +163,27 @@
           "hidden_from_flow": false,
           "icon": "code",
           "color": "#ffa657"
+        },
+        {
+          "slug": "coder-gpt-5-6-sol",
+          "name": "Coder - GPT-5.6 Sol",
+          "description": "The Codex CLI coder on GPT-5.6 Sol, for the strongest current OpenAI-backed implementation path in the Coder family.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "codex-runner-gpt-5-6-sol",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "coders",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same Coder contract, running the Codex CLI on GPT-5.6 Sol: implements a scoped coding task end to end and verifies it before reporting.",
+          "use_cases": [
+            "implement a complex feature with GPT-5.6 Sol",
+            "debug a difficult issue with the latest Codex model",
+            "get an independent OpenAI-backed implementation"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#f0883e"
         },
         {
           "slug": "product-owner",

@@ -58,7 +58,8 @@ def test_ships_the_whole_team_the_app_is_named_for(spec):
     assert {"product-owner", "architect", "ux-coder-sonnet"} <= slugs
     # The Coder and QA families are the point of having variants at all: same
     # contract, different model, chosen by what the task is worth.
-    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= slugs
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+            "coder-gpt-5-6-sol"} <= slugs
     assert {"qa-sonnet", "qa-haiku"} <= slugs
 
 
@@ -81,7 +82,7 @@ def test_qa_sits_where_its_own_skill_says_it_does(spec):
     reachable = _neighbours(spec, group_slug="qas")
     assert "source" in reachable
     assert {"product-owner", "coder-sonnet", "coder-opus", "coder-haiku",
-            "coder-codex", "ux-coder-sonnet"} <= reachable
+            "coder-codex", "coder-gpt-5-6-sol", "ux-coder-sonnet"} <= reachable
 
     # ...and both QA agents are actually in the group the node names, or it
     # expands to nobody and draws a box connected to nothing.
@@ -162,7 +163,8 @@ def test_the_coders_are_one_group_node_sitting_between_design_and_review(spec):
     the finished work goes to QA.
     """
     members = {a["slug"] for a in spec["agents"] if a["group_slug"] == "coders"}
-    assert members == {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"}
+    assert members == {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+                       "coder-gpt-5-6-sol"}
     # The UX Coder is deliberately NOT here — see the test above; it would
     # inherit the Architect edge this group has and lose the one thing its
     # own contract promises it.
@@ -184,7 +186,8 @@ def test_the_debugger_enters_ahead_of_scoping_and_hands_down_to_the_coders(spec)
     """
     reachable = _neighbours(spec, agent_slug="debugger")
     assert "source" in reachable
-    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+            "coder-gpt-5-6-sol"} <= reachable
 
 
 def test_the_doc_writer_is_wired_to_everything_except_qa(spec):
@@ -198,7 +201,8 @@ def test_the_doc_writer_is_wired_to_everything_except_qa(spec):
     """
     reachable = _neighbours(spec, agent_slug="doc-writer")
     assert "source" in reachable
-    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+            "coder-gpt-5-6-sol"} <= reachable
     assert not ({"qa-sonnet", "qa-haiku"} & reachable)
 
 
@@ -217,7 +221,8 @@ def test_the_code_reviewer_sits_beside_qa_not_inside_it(spec):
     """
     reachable = _neighbours(spec, agent_slug="code-reviewer-sonnet")
     assert "source" in reachable
-    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex"} <= reachable
+    assert {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
+            "coder-gpt-5-6-sol"} <= reachable
     assert not ({"qa-sonnet", "qa-haiku"} & reachable)
 
     reviewer = next(a for a in spec["agents"] if a["slug"] == "code-reviewer-sonnet")
