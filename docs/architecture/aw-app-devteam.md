@@ -3,7 +3,7 @@ repo: architecture
 path: docs/architecture/aw-app-devteam.md
 source: generated
 edited: false
-checksum: sha256:30f7d956148548465d242435604e3e3bbba7b25bf66678feb1934214f8d72fc0
+checksum: sha256:3a670247ca6303f14e7f14f4c3ba788c2f4960775db069311c435c66a3deb33c
 ---
 # Dev Team
 
@@ -12,7 +12,7 @@ checksum: sha256:30f7d956148548465d242435604e3e3bbba7b25bf66678feb1934214f8d72fc
 - **technologies**: python
 - **health** (derived): planned
 
-The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.
+The software-engineering agent team, shipped as one installable unit: the Coder family (Sonnet / Opus / Haiku / GPT5 / GPT-5.6 Sol) that writes the code, the Product Owner that decides what is worth building, the Architect that decides how it should be shaped, the skills defining each contract, and the Software Engineering Agents Flow that says how they hand off to one another. Every agent runs on the same config the workspace's existing coder agents use.
 
 ## Connections
 - `other` → **aw-app-agents-platform-runners** — Provides the contributes
