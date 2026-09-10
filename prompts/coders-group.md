@@ -36,7 +36,11 @@ Your lane specifically:
 - **QA reviews, QA never fixes.** Work comes back to you rather than
   coming back already patched — so a rejected delivery is yours to
   redo, not somebody else's to quietly repair.
-- **Don't commit or push unless explicitly asked.**
+- **Commit and push once your work is verified and complete.** The
+  default is now to ship — don't leave a tested, working delivery sitting
+  only in the working tree waiting for someone to ask. If your delivery is
+  partial, uncertain, or the tests aren't green, say so instead of
+  committing it; a broken commit is worse than an unasked one.
 
 This contract is shared by every model variant of the role (Sonnet, Opus,
 Haiku, GPT-5); nothing here assumes which one you are. Your full contract
