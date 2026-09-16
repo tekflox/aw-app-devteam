@@ -1,0 +1,97 @@
+name: Security scan
+
+# Free SAST + SCA + Secrets pilot (Semgrep + Trivy + Gitleaks), decided with
+# Frederico as a no-cost alternative to Veracode. Runs on its own daily cron
+# rather than on every push — a new CVE in a dependency doesn't change per
+# commit, and this keeps the everyday CI in test.yml/release.yml fast.
+# Additive only: does not touch the release or test workflows. DAST is a
+# separate, later card (it will reuse aw-automation's staging/prod URLs).
+#
+# Findings surface in this repo's Security > Code scanning tab via SARIF
+# upload — no extra infra. This job intentionally does not fail the build on
+# findings (continue-on-error on each scan step): it is a report-only pilot,
+# not a merge gate.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep:
+    runs-on: [self-hosted, aw-baremetal]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install Semgrep
+        run: pip install semgrep
+      - name: Run Semgrep (SAST)
+        continue-on-error: true
+        run: |
+          semgrep scan --config p/security-audit --config p/owasp-top-ten \
+            --sarif --output semgrep.sarif .
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+  trivy:
+    runs-on: [self-hosted, aw-baremetal]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Run Trivy (SCA + secrets + IaC/Dockerfile misconfig)
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          format: sarif
+          output: trivy.sarif
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4
+        with:
+          sarif_file: trivy.sarif
+          category: trivy
+
+  gitleaks:
+    runs-on: [self-hosted, aw-baremetal]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Install Gitleaks
+        # Deliberately the OSS CLI, not gitleaks/gitleaks-action — that
+        # wrapper requires a paid license for org-owned repos (tekflox is an
+        # org). Redundant by design with Trivy's own secret scanner: each
+        # tool catches different patterns, and this one covers full git
+        # history, not just the working tree.
+        run: |
+          ARCH=$(uname -m)
+          case "$ARCH" in
+            x86_64) GL_ARCH=x64 ;;
+            aarch64) GL_ARCH=arm64 ;;
+            *) GL_ARCH="$ARCH" ;;
+          esac
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_${GL_ARCH}.tar.gz" \
+            | tar -xz gitleaks
+      - name: Run Gitleaks (secrets in git history)
+        # gitleaks exits 1 on a finding by design; swallow it so the
+        # Annotations panel doesn't show a red "failure" for this
+        # report-only pilot. The SARIF file is already written by then.
+        run: ./gitleaks detect --source . --report-format sarif --report-path gitleaks.sarif -v || true
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4
+        with:
+          sarif_file: gitleaks.sarif
+          category: gitleaks
