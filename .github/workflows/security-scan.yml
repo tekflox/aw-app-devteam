@@ -1,8 +1,8 @@
 name: Security scan
 
 # Free SAST + SCA + Secrets pilot (Semgrep + Trivy + Gitleaks), decided with
-# Frederico as a no-cost alternative to Veracode. Runs on its own daily cron
-# rather than on every push — a new CVE in a dependency doesn't change per
+# Frederico as a no-cost alternative to Veracode. Runs on its own weekly cron (staggered per repo
+# to avoid all 50+ repos hammering the 4 shared self-hosted runners at once) rather than on every push — a new CVE in a dependency doesn't change per
 # commit, and this keeps the everyday CI in test.yml/release.yml fast.
 # Additive only: does not touch the release or test workflows. DAST is a
 # separate, later card (it will reuse aw-automation's staging/prod URLs).
@@ -14,7 +14,7 @@ name: Security scan
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "28 3 * * 2"
   workflow_dispatch: {}
 
 permissions:
