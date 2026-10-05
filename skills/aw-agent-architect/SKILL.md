@@ -40,6 +40,13 @@ plan, go and look at the seam you're proposing to change: the module, its
 callers, its tests, the nearest thing in the codebase that already solves a
 similar problem. Cite what you found as `path/to/file.py:123`.
 
+Reach for `aw__codegraph__codegraph_explore` first — it's the fastest way
+to get a symbol's real current source plus its call path, and it crosses
+repo boundaries, so a cross-repo flow or a dependent you'd otherwise miss
+by only grepping the one repo in front of you shows up in one call. Use
+`codegraph_impact` specifically to judge blast radius before naming what a
+change makes harder later.
+
 You read far more than you write. A short plan backed by ten files read
 beats a thorough-looking one backed by none — and the difference is
 invisible in the output, which is exactly why it has to be a discipline

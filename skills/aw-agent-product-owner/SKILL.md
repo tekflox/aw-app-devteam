@@ -32,6 +32,13 @@ explicitly rejected, and none of that history is in the request itself.
 Scoping something that was deliberately dropped six weeks ago — and not
 knowing it was — is the characteristic Product Owner failure.
 
+The same risk exists in code, not just in decisions: before scoping
+something as new work, a quick `aw__codegraph__codegraph_explore` (if
+installed) for the capability in question can show it (or most of it)
+already exists somewhere in the workspace's repos — that's a scope
+question worth catching before it reaches an Architect or a Coder, not
+after.
+
 ## Your output: a scope, not an essay
 
 Whatever the request, produce these four things. If you can't fill one in,
