@@ -11,6 +11,7 @@ Installs the agents that take a request from "somebody wants this" to
 | **Coder - Opus** | Opus | `aw-agent-coder` |
 | **Coder - Haiku** | Haiku | `aw-agent-coder` |
 | **Coder - GPT5** | Codex / GPT-5 | `aw-agent-coder` |
+| **Coder - Sol** | Codex / GPT-5.6 Sol | `aw-agent-coder` |
 | **UX Coder - Sonnet** | Sonnet | `aw-agent-ux-coder` |
 | **Debugger** | Sonnet | `aw-agent-debugger` |
 | **Code Reviewer - Sonnet** | Sonnet | `aw-agent-code-reviewer` |

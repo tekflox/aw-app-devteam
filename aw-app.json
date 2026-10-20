@@ -168,8 +168,8 @@
           "color": "#ffa657"
         },
         {
-          "slug": "coder-gpt-5-6-sol",
-          "name": "Coder - GPT-5.6 Sol",
+          "slug": "coder-sol",
+          "name": "Coder - Sol",
           "description": "The Codex CLI coder on GPT-5.6 Sol, for the strongest current OpenAI-backed implementation path in the Coder family.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "codex-runner-gpt-5-6-sol",
