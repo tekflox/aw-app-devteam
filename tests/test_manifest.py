@@ -164,7 +164,7 @@ def test_the_coders_are_one_group_node_sitting_between_design_and_review(spec):
     """
     members = {a["slug"] for a in spec["agents"] if a["group_slug"] == "coders"}
     assert members == {"coder-sonnet", "coder-opus", "coder-haiku", "coder-codex",
-                       "coder-sol"}
+                       "coder-sol", "coder-luna", "coder-terra"}
     # The UX Coder is deliberately NOT here — see the test above; it would
     # inherit the Architect edge this group has and lose the one thing its
     # own contract promises it.

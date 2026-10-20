@@ -189,6 +189,48 @@
           "color": "#f0883e"
         },
         {
+          "slug": "coder-luna",
+          "name": "Coder - Luna",
+          "description": "The Codex CLI coder on GPT-5.6 Luna, another independent OpenAI-backed implementation path in the Coder family.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "codex-runner-gpt-5-6-luna",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "coders",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same Coder contract, running the Codex CLI on GPT-5.6 Luna: implements a scoped coding task end to end and verifies it before reporting.",
+          "use_cases": [
+            "implement a complex feature with GPT-5.6 Luna",
+            "debug a difficult issue with Codex on a different GPT-5.6 variant",
+            "get an independent OpenAI-backed implementation"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#79c0ff"
+        },
+        {
+          "slug": "coder-terra",
+          "name": "Coder - Terra",
+          "description": "The Codex CLI coder on GPT-5.6 Terra, another independent OpenAI-backed implementation path in the Coder family.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "codex-runner-gpt-5-6-terra",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "coders",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same Coder contract, running the Codex CLI on GPT-5.6 Terra: implements a scoped coding task end to end and verifies it before reporting.",
+          "use_cases": [
+            "implement a complex feature with GPT-5.6 Terra",
+            "debug a difficult issue with Codex on a different GPT-5.6 variant",
+            "get an independent OpenAI-backed implementation"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#56d364"
+        },
+        {
           "slug": "product-owner",
           "name": "Product Owner",
           "description": "Owns what gets built and why. Turns a vague ask into a scoped outcome with a stated user, a stated success condition and an explicit out-of-scope list \u2014 and says no to the work that shouldn't happen, before anyone writes code for it.",
