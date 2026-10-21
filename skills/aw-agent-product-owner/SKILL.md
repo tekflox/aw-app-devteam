@@ -21,10 +21,11 @@ after Source, which means most requests hit you before anyone else.
 
 ## Mandatory: search the knowledge base before you scope anything
 
-Call **`search_knowledge_base`** with the request as the query — the tool
-is `search_knowledge_base` directly, or `aw__kb__search_knowledge_base`
-when routed through the `aw-gateway` MCP server. Run 2–3 searches from
-different angles if the first is thin.
+Call **`knowledge_search`** with the request as the query — the tool
+is `knowledge_search` directly, or `aw__aw_knowledgeable__knowledge_search`
+when routed through the `aw-gateway` MCP server (contributed by the
+Knowledgeable Connector app). Run 2–3 searches from different angles if
+the first is thin.
 
 This matters more for you than for anyone else on the team. A request that
 reaches you fresh has usually already been discussed, partly built, or

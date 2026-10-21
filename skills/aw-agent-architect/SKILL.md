@@ -22,10 +22,10 @@ you specify).
 
 ## Mandatory: search the knowledge base first
 
-Call **`search_knowledge_base`** with the subject area as the query —
-`search_knowledge_base` directly, or `aw__kb__search_knowledge_base` when
-routed through the `aw-gateway` MCP server. Run 2–3 searches from different
-angles.
+Call **`knowledge_search`** with the subject area as the query — the tool
+is `knowledge_search` directly, or `aw__aw_knowledgeable__knowledge_search`
+when routed through the `aw-gateway` MCP server (contributed by the
+Knowledgeable Connector app). Run 2–3 searches from different angles.
 
 For you this is the difference between designing and re-designing. This
 codebase records its past decisions and the reasons behind them; proposing

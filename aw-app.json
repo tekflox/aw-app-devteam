@@ -613,10 +613,10 @@
         "reason": "Provides the contributes.agents surface \u2014 it holds the Agents Platform base URL and identity token, which core does not. The floor matters twice over: 0.55.0 is the first version that can seed an agent_flows entry at all (older ones create the six agents and silently drop the flow, leaving a team with no topology), and it is also the app that ships the aw-agent-coder skill every Coder here references by slug. Non-required on purpose: a declaration that arrives before the provider is HELD and replayed the moment one appears, so this app installs cleanly either way."
       },
       {
-        "id": "kb",
-        "version": ">=0.18.0",
+        "id": "knowledgeable",
+        "version": ">=0.25.0",
         "required": false,
-        "reason": "Supplies search_knowledge_base, which all three contracts make a mandatory first step. Non-required, but the team is materially worse without it: the KB is what stops the Architect re-deciding something already decided and the PO re-scoping something already shipped."
+        "reason": "Supplies knowledge_search, which all three contracts make a mandatory first step. Non-required, but the team is materially worse without it: the KB is what stops the Architect re-deciding something already decided and the PO re-scoping something already shipped."
       }
     ]
   },
