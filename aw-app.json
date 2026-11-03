@@ -416,6 +416,26 @@
           "hidden_from_flow": false,
           "icon": "search-code",
           "color": "#58a6ff"
+        },
+        {
+          "slug": "pr-research-haiku",
+          "name": "PR Research - Haiku",
+          "description": "A research worker, not a review persona: answers one bounded dependency/CVE/integration question dispatched by Code Reviewer - Sonnet during a PR deep review, over WebSearch/WebFetch, and stops. The lookup contract (question, output shape, citation requirement) travels in the dispatch input, never in this seed prompt.",
+          "system_prompt_file": "prompts/pr-research-haiku.md",
+          "model_slug": "claude-runner-haiku",
+          "disable_harness_tools": true,
+          "workspace": "aw",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "capabilities": "Answers one bounded research question (dependency version, CVE/advisory, external integration behavior) with citations, fanned out by Code Reviewer - Sonnet's dependency-freshness lens, at most 3 per PR review.",
+          "use_cases": [
+            "is there a known CVE for this dependency version",
+            "what is the latest released version of this package",
+            "what does this external API/library actually do today"
+          ],
+          "hidden_from_flow": true,
+          "icon": "search",
+          "color": "#8b949e"
         }
       ],
       "agent_flows": [
