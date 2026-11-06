@@ -1,0 +1,76 @@
+name: Test
+
+# PR-gate CI for this repo: a `pytest` job whose check name feeds the
+# code-review-reusable.yml loop's `ci_check_name` input (see code-review.yml
+# in this same directory), plus a report-only `lint` job.
+#
+# This repo is `tier: inprocess` (aw-app.json) — it runs inside aw-workspace
+# core's own Python process and has no `requirements.txt`/`pyproject.toml` of its own; its runtime deps are core's. The exact same gap already
+# exists for `release.yml` (tekflox/aw-marketplace's `app-release.yml`),
+# which already runs `python3 -m pytest tests/ -q` against this repo on
+# every push to master with nothing more than `pip install pytest jsonschema
+# fastapi httpx uvicorn` (+ requirements.txt/requirements-dev.txt IF
+# present) — confirmed green locally with this exact install set before
+# this file was added.
+#
+# No `paths:` filter on `pull_request`, deliberately: the review/merge loop
+# requires this job's check to be PRESENT and passing before it will merge
+# ("absent" must never read as "fine" — see code-review.yml's `ci_check_name`
+# comment). A paths filter would let a docs-only PR never produce this check
+# at all.
+#
+# `ubuntu-latest`, NOT `[self-hosted, aw-baremetal]`: this repo is PUBLIC
+# and `pull_request` has no fork restriction here — a fork-authored PR's own
+# `tests/`/install step would otherwise execute directly on the self-hosted
+# baremetal pool, a known way to compromise self-hosted CI infrastructure.
+# GitHub-hosted minutes are free on a public repo, so there is no cost
+# reason to prefer self-hosted here anyway.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          pip install -q pytest jsonschema fastapi httpx uvicorn
+          if [ -f requirements.txt ]; then
+            pip install -q -r requirements.txt
+          fi
+          if [ -f requirements-dev.txt ]; then
+            pip install -q -r requirements-dev.txt
+          fi
+
+      - name: Run test suite
+        run: python3 -m pytest tests/ -q
+
+  # Report-only: this repo has no `pyproject.toml` and has not been through
+  # the triage pass docs/standards/pipeline-testing.md's Tier-B rollout
+  # requires before a pylint error-class gate can block merges. Ruff with
+  # its own defaults needs no repo config and gives a baseline without
+  # inventing an un-triaged blocking gate as a side effect of adding CI.
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: ruff check (report-only)
+        run: |
+          pip install -q ruff
+          python -m ruff check . || true
