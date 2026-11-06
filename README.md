@@ -206,3 +206,7 @@ python3 -m pytest tests -q
 
 The manifest *is* this app — no routes, no window, no CLI — so the tests
 are entirely about whether the declarations are internally consistent.
+
+<!-- aw-app-* fleet CI/PR migration (Batch 6) — follow-up no-op PR proving the
+     comment (/aw-review) and workflow_run merge paths now that code-review.yml
+     exists on the default branch. Dev Team app — CI/PR migration follow-up (Batch 6). CI workflow files only; agent prompts/contracts untouched. -->
