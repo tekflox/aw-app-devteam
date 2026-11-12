@@ -108,7 +108,7 @@ concurrency:
 
 jobs:
   review:
-    uses: fredericowu/aw-shared-workflows/.github/workflows/code-review-reusable.yml@v1.7.0
+    uses: fredericowu/aw-shared-workflows/.github/workflows/code-review-reusable.yml@v1.8.0
     with:
       ci_check_name: pytest
     # Declared here as well as in the called workflow: for a reusable
