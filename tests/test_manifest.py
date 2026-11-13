@@ -298,12 +298,16 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
 
     # Every agent this app ships still reaches the graph, one way or the
     # other — shipping an agent nobody can hand off to is the bug this
-    # whole file exists to catch. The one deliberate exception: a worker
-    # agent dispatched programmatically (run_agents_parallel) by another
-    # agent's own session, never via an Agents Flow hand-off, so it has no
-    # flow position to assert — pr-research-haiku, fanned out by Code
-    # Reviewer - Sonnet's dependency-freshness lens.
-    never_flow_dispatched = {"pr-research-haiku"}
+    # whole file exists to catch. Two deliberate exceptions: a worker agent
+    # dispatched programmatically (run_agents_parallel) by another agent's
+    # own session, never via an Agents Flow hand-off, so it has no flow
+    # position to assert — pr-research-haiku, fanned out by Code Reviewer -
+    # Sonnet's dependency-freshness lens; and code-reviewer-pipeline, a
+    # CI-dispatched one-shot reviewer kept deliberately off the flow graph
+    # so the terminal-action reprompt/escalation net never fires on a
+    # card-less, caller-less CI run (incident: run
+    # 8137817bf28841ee8a3643d2a769f12c).
+    never_flow_dispatched = {"pr-research-haiku", "code-reviewer-pipeline"}
     in_a_wired_group = {a["slug"] for a in spec["agents"] if a["group_slug"] in grouped}
     assert (wired | in_a_wired_group | never_flow_dispatched
             == {a["slug"] for a in spec["agents"]})

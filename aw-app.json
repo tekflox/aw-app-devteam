@@ -418,6 +418,30 @@
           "color": "#58a6ff"
         },
         {
+          "slug": "code-reviewer-pipeline",
+          "name": "Code Reviewer - Pipeline",
+          "description": "A CI-dispatched PR reviewer: identical review contract to Code Reviewer - Sonnet (same prompt, same skill) but deliberately NOT a node in any Agents Flow. Dispatched one-shot through AP-MT's /v1 door by GitHub CI with no Kanban card and no caller session; posts its JSON verdict and stops. Never add this agent (or a group node with group_slug \"devteam\") to a flow graph — the split exists so flow reprompt/escalation never fires for CI reviews.",
+          "system_prompt_file": "prompts/code-reviewer.md",
+          "model_slug": "claude-runner-sonnet",
+          "disable_harness_tools": true,
+          "agent_config_slug": "devteam-config",
+          "group_slug": "devteam",
+          "kanban_target_status": "running",
+          "skill_slugs": [
+            "aw-agent-code-reviewer"
+          ],
+          "capabilities": "Deep-reviews a PR dispatched from GitHub CI for defects in the code itself — correctness, failure modes that only show in production, duplicated logic, tests that would not have caught the bug — with a concrete failure behind every finding. Never edits what it reviews. Flow-detached twin of Code Reviewer - Sonnet: no terminal-action contract, no reprompt/escalation.",
+          "use_cases": [
+            "deep-review this PR from CI",
+            "review this diff",
+            "is this change correct",
+            "what will break when this ships"
+          ],
+          "hidden_from_flow": true,
+          "icon": "search-code",
+          "color": "#3fb950"
+        },
+        {
           "slug": "pr-research-haiku",
           "name": "PR Research - Haiku",
           "description": "A research worker, not a review persona: answers one bounded dependency/CVE/integration question dispatched by Code Reviewer - Sonnet during a PR deep review, over WebSearch/WebFetch, and stops. The lookup contract (question, output shape, citation requirement) travels in the dispatch input, never in this seed prompt.",
