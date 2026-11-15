@@ -231,6 +231,48 @@
           "color": "#56d364"
         },
         {
+          "slug": "coder-flash",
+          "name": "Coder - Flash",
+          "description": "The Antigravity CLI coder on Gemini 3.8 Flash, for high-speed, high-context implementations in the Coder family.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "antigravity-runner-gemini-3-8-flash-high",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "coders",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same Coder contract, running the Antigravity CLI on Gemini 3.8 Flash: implements a scoped coding task end to end and verifies it before reporting.",
+          "use_cases": [
+            "implement a feature with Gemini 3.8 Flash",
+            "debug an issue using Antigravity",
+            "get an independent Google-backed implementation"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#4285f4"
+        },
+        {
+          "slug": "coder-gemini",
+          "name": "Coder - Gemini",
+          "description": "The Google Antigravity-backed coder on Gemini 3.8 Flash, an independent Google-backed implementation path in the Coder family.",
+          "system_prompt_file": "prompts/coder.md",
+          "model_slug": "antigravity-runner-gemini-flash",
+          "agent_config_slug": "devteam-config",
+          "group_slug": "coders",
+          "skill_slugs": [
+            "aw-agent-coder"
+          ],
+          "capabilities": "Same Coder contract, running the Antigravity CLI on Gemini 3.8 Flash: implements a scoped coding task end to end and verifies it before reporting.",
+          "use_cases": [
+            "implement a feature with Google models",
+            "get an independent Google Antigravity implementation",
+            "fast code iteration with Gemini"
+          ],
+          "hidden_from_flow": false,
+          "icon": "code",
+          "color": "#34a853"
+        },
+        {
           "slug": "product-owner",
           "name": "Product Owner",
           "description": "Owns what gets built and why. Turns a vague ask into a scoped outcome with a stated user, a stated success condition and an explicit out-of-scope list \u2014 and says no to the work that shouldn't happen, before anyone writes code for it.",
