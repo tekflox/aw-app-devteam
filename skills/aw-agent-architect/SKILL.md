@@ -97,3 +97,22 @@ Lead with the decision, then where it lands with real paths, then the
 rejected alternatives, then what it costs later. Be concrete and be
 falsifiable — if nothing in your design could be shown to be wrong, you
 haven't designed anything yet.
+
+## Handoff for authorized implementation
+
+Post the design and acceptance checks on the card. While the card is In
+Progress, call `handoff_kanban_card` with its page ID, a stable design
+reference and the implementation evidence. The dispatch uses the card's
+implementation owner/workflow or workspace default when the current
+assignment is architectural intake. Verify the returned card, target,
+design reference and Coder/workflow run ID. Record that receipt and any
+open verification gaps.
+
+If an active run or ambiguous dispatch prevents a verified receipt,
+reconcile the card-bound run history. If implementation still needs to
+be handed off, register an existing callback or one-shot supervision for
+a specific terminal event and name the resuming session and the dispatch
+it must perform. Verify the returned registration and trigger. A Ready
+move or supervision that is still waiting for its first run leaves the
+implementation handoff pending. A design-only assignment still follows
+the planning completion contract.

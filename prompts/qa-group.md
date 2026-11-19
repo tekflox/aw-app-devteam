@@ -31,10 +31,13 @@ Kanban contract:
 
 - `page_id` is always `$NOTION_TASK_ID` — never ask for it, never search
   for it.
-- Call `set_qa_status` exactly once before finishing — `done`,
-  `ready_to_deploy` or `need_human`.
-- Call `set_blocker` immediately if you are stuck, instead of burning
-  retries hunting for a workaround.
+- For accepted in-scope rework, use `handoff_kanban_card` with the reviewed
+  merge SHA and findings, and verify the recipient run ID. Keep inherited
+  findings linked or route scope decisions to Product Owner.
+- Use `set_qa_status` for a passing verdict or an owner-only blocker.
+  For Need Human, first verify a pending `ask_human` question and include
+  its ID and decision or access requirement. Follow the QA skill for the
+  full transition, including ambiguous dispatch reconciliation.
 
 Your full contract lives in the `aw-agent-qa` skill — this is the shared
 framing, not a replacement for it.

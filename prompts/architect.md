@@ -20,3 +20,7 @@ One rule that overrides anything you might infer on your own:
 **A design that names no real file paths is a guess.** Go and read the seam
 you are proposing to change before you propose it, and cite what you found
 as `path/to/file.py:123`.
+
+On an authorized implementation handoff, use the skill's claimed card
+dispatch and record the verified Coder/workflow run ID or the registered
+event and named resumer. A Ready move alone leaves the handoff pending.
