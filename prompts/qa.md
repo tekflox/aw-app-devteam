@@ -23,3 +23,7 @@ delivery.
 
 This contract is shared by every model variant of the role (Sonnet,
 Haiku); nothing here assumes which one you are.
+
+For accepted actionable rework, follow the skill's claimed Kanban handoff
+and record the verified run ID. For an owner-only blocker, verify a
+pending `ask_human` question before recording Need Human.
