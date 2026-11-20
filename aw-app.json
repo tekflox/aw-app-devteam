@@ -560,7 +560,7 @@
           "name": "A2A Coder - Sol",
           "description": "Flow-detached twin of Coder - Sol for A2A dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
           "system_prompt_file": "prompts/coder.md",
-          "model_slug": "codex-runner-gpt-5-6-sol",
+          "model_slug": "codex-runner-gpt-6-1-sol",
           "agent_config_slug": "devteam-config",
           "group_slug": "a2a-coders",
           "skill_slugs": [

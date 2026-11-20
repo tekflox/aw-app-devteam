@@ -467,9 +467,17 @@ def test_a2a_coders_are_flow_detached(spec):
 def test_a2a_coders_match_their_coder_twin(spec):
     by = {a["slug"]: a for a in spec["agents"]}
     for slug, twin in A2A_TWINS.items():
+        # model_slug is not compared for sol: the coder-sol manifest entry
+        # names codex-runner-gpt-5-6-sol, a model slug that does not exist
+        # live (the live coder-sol runs codex-runner-gpt-6-1-sol). The a2a
+        # twin uses the live slug so it actually seeds.
         for key in ("system_prompt_file", "skill_slugs", "agent_config_slug",
-                    "model_slug", "disable_harness_tools"):
+                    "disable_harness_tools"):
             assert by[slug].get(key) == by[twin].get(key), (slug, key)
+        if slug != "a2a-coder-sol":
+            assert by[slug]["model_slug"] == by[twin]["model_slug"], slug
+        else:
+            assert by[slug]["model_slug"] == "codex-runner-gpt-6-1-sol"
         assert by[twin]["group_slug"] == "coders"
 
 
