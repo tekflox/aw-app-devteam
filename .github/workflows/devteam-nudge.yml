@@ -1,0 +1,49 @@
+name: Devteam Nudge
+
+# Reference caller for the human label trigger: a person adding
+# devteam:awaiting-fixes wakes the coder at once instead of waiting for the
+# 3h tick. Labels written by the review pipeline use GITHUB_TOKEN and start
+# no workflow, so they never fire this. The review-event nudges need no
+# per-repo file: they run inside code-review-reusable.yml.
+#
+# pull_request_target runs the default-branch copy of this file, so an open PR
+# needs no rebase to get it. Safe because nothing here checks out PR code.
+# Copy this file as is into a consumer repo; part C of the event-driven PR
+# lifecycle (card 41e5bf3b-9510-81b3-8162-e53d77d5772d) rolls it out.
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+concurrency:
+  group: devteam-nudge-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: read
+  statuses: read
+  actions: read
+
+jobs:
+  nudge:
+    if: >-
+      github.event.sender.type != 'Bot' &&
+      github.event.label.name == 'devteam:awaiting-fixes' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    uses: fredericowu/aw-shared-workflows/.github/workflows/devteam-nudge-reusable.yml@master
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      trigger_kind: label
+      trigger_label: ${{ github.event.label.name }}
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      checks: read
+      statuses: read
+      actions: read
+    secrets:
+      AW_DEVTEAM_EVENT_SECRET: ${{ secrets.AW_DEVTEAM_EVENT_SECRET }}
