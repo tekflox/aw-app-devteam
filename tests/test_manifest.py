@@ -308,8 +308,8 @@ def test_flow_membership_is_exactly_what_the_contracts_document(spec):
     # card-less, caller-less CI run (incident: run
     # 8137817bf28841ee8a3643d2a769f12c).
     never_flow_dispatched = {"pr-research-haiku", "code-reviewer-pipeline",
-                             "a2a-coder-haiku", "a2a-coder-sonnet",
-                             "a2a-coder-sol"}
+                             "standalone-coder-haiku", "standalone-coder-sonnet",
+                             "standalone-coder-sol"}
     in_a_wired_group = {a["slug"] for a in spec["agents"] if a["group_slug"] in grouped}
     assert (wired | in_a_wired_group | never_flow_dispatched
             == {a["slug"] for a in spec["agents"]})
@@ -445,47 +445,47 @@ def test_the_shipped_skills_do_not_carry_monolith_paths(manifest):
         assert "ntn_" not in text, skill["id"]
 
 
-A2A_TWINS = {"a2a-coder-haiku": "coder-haiku", "a2a-coder-sonnet": "coder-sonnet",
-             "a2a-coder-sol": "coder-sol"}
+STANDALONE_TWINS = {"standalone-coder-haiku": "coder-haiku", "standalone-coder-sonnet": "coder-sonnet",
+             "standalone-coder-sol": "coder-sol"}
 
 
-def test_a2a_coders_are_flow_detached(spec):
+def test_standalone_coders_are_flow_detached(spec):
     """Injection and the missing-action reprompt both key on flow membership
-    (agent node, or member of a group node). An a2a agent that is in either
+    (agent node, or member of a group node). A standalone agent that is in either
     gets the terminal-action contract and is nudged, which is the cost this
     family exists to avoid."""
     nodes = [n for f in spec["agent_flows"] for n in f["graph"]["nodes"]]
-    assert not [n for n in nodes if n.get("agent_slug") in A2A_TWINS]
-    assert not [n for n in nodes if n.get("group_slug") == "a2a-coders"]
+    assert not [n for n in nodes if n.get("agent_slug") in STANDALONE_TWINS]
+    assert not [n for n in nodes if n.get("group_slug") == "standalone-coders"]
     by = {a["slug"]: a for a in spec["agents"]}
-    for slug in A2A_TWINS:
-        assert by[slug]["group_slug"] == "a2a-coders", slug
+    for slug in STANDALONE_TWINS:
+        assert by[slug]["group_slug"] == "standalone-coders", slug
         assert by[slug]["hidden_from_flow"] is True, slug
         assert "kanban_target_status" not in by[slug], slug
 
 
-def test_a2a_coders_match_their_coder_twin(spec):
+def test_standalone_coders_match_their_coder_twin(spec):
     by = {a["slug"]: a for a in spec["agents"]}
-    for slug, twin in A2A_TWINS.items():
+    for slug, twin in STANDALONE_TWINS.items():
         # model_slug is not compared for sol: the coder-sol manifest entry
         # names codex-runner-gpt-5-6-sol, a model slug that does not exist
-        # live (the live coder-sol runs codex-runner-gpt-6-1-sol). The a2a
+        # live (the live coder-sol runs codex-runner-gpt-6-1-sol). The standalone
         # twin uses the live slug so it actually seeds.
         for key in ("system_prompt_file", "skill_slugs", "agent_config_slug",
                     "disable_harness_tools"):
             assert by[slug].get(key) == by[twin].get(key), (slug, key)
-        if slug != "a2a-coder-sol":
+        if slug != "standalone-coder-sol":
             assert by[slug]["model_slug"] == by[twin]["model_slug"], slug
         else:
             assert by[slug]["model_slug"] == "codex-runner-gpt-6-1-sol"
         assert by[twin]["group_slug"] == "coders"
 
 
-def test_a2a_group_has_no_status_and_states_the_cardless_contract(spec):
-    group = next(g for g in spec["groups"] if g["slug"] == "a2a-coders")
+def test_standalone_group_has_no_status_and_states_the_cardless_contract(spec):
+    group = next(g for g in spec["groups"] if g["slug"] == "standalone-coders")
     assert "kanban_target_status" not in group
     text = (APP_DIR / group["instructions_file"]).read_text()
     for needle in ("mark_flow_done", "return_to_caller_agent", "NOTION_TASK_ID",
-                   "A2A-CARD-BOUND-UNSUPPORTED", "400 characters",
+                   "STANDALONE-CARD-BOUND-UNSUPPORTED", "400 characters",
                    "caller owns QA"):
         assert needle in text, needle

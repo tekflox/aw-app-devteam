@@ -78,10 +78,10 @@
           "kanban_target_status": "running"
         },
         {
-          "slug": "a2a-coders",
-          "name": "A2A Coders",
+          "slug": "standalone-coders",
+          "name": "Standalone Coders",
           "description": "Flow-detached Coder twins for agent-to-agent dispatch (run_agent_async / run_agents_parallel). Deliberately NOT a node in any Agents Flow: no terminal-action injection, no missing-action reprompt. Never add a group node for this slug to a flow graph.",
-          "instructions_file": "prompts/a2a-coders-group.md",
+          "instructions_file": "prompts/standalone-coders-group.md",
           "capabilities": "Bounded coding work dispatched by another agent that wants a plain result back, with no Kanban card and no Agents Flow hand-off. Same coder contract and skill as the Coders group."
         }
       ],
@@ -511,18 +511,18 @@
           "color": "#8b949e"
         },
         {
-          "slug": "a2a-coder-haiku",
-          "name": "A2A Coder - Haiku",
-          "description": "Flow-detached twin of Coder - Haiku for A2A dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
+          "slug": "standalone-coder-haiku",
+          "name": "Standalone Coder - Haiku",
+          "description": "Flow-detached twin of Coder - Haiku for standalone dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-haiku",
           "disable_harness_tools": true,
           "agent_config_slug": "devteam-config",
-          "group_slug": "a2a-coders",
+          "group_slug": "standalone-coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
-          "capabilities": "Same contract as Coder - Sonnet, on the cheapest model. For high-volume, low-judgement edits. A2A variant: returns a plain result to the calling agent.",
+          "capabilities": "Same contract as Coder - Sonnet, on the cheapest model. For high-volume, low-judgement edits. Standalone variant: returns a plain result to the calling agent.",
           "use_cases": [
             "rename this symbol everywhere",
             "apply this same edit across 30 files",
@@ -533,18 +533,18 @@
           "color": "#8b949e"
         },
         {
-          "slug": "a2a-coder-sonnet",
-          "name": "A2A Coder - Sonnet",
-          "description": "Flow-detached twin of Coder - Sonnet for A2A dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
+          "slug": "standalone-coder-sonnet",
+          "name": "Standalone Coder - Sonnet",
+          "description": "Flow-detached twin of Coder - Sonnet for standalone dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "claude-runner-sonnet",
           "disable_harness_tools": true,
           "agent_config_slug": "devteam-config",
-          "group_slug": "a2a-coders",
+          "group_slug": "standalone-coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
-          "capabilities": "Implements a scoped coding task end to end in the repo this run targets \u2014 bug fix, feature, refactor or investigation \u2014 and verifies it before reporting. A2A variant: returns a plain result to the calling agent.",
+          "capabilities": "Implements a scoped coding task end to end in the repo this run targets \u2014 bug fix, feature, refactor or investigation \u2014 and verifies it before reporting. Standalone variant: returns a plain result to the calling agent.",
           "use_cases": [
             "implement this feature",
             "fix this bug",
@@ -556,17 +556,17 @@
           "color": "#58a6ff"
         },
         {
-          "slug": "a2a-coder-sol",
-          "name": "A2A Coder - Sol",
-          "description": "Flow-detached twin of Coder - Sol for A2A dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
+          "slug": "standalone-coder-sol",
+          "name": "Standalone Coder - Sol",
+          "description": "Flow-detached twin of Coder - Sol for standalone dispatch: same prompt, skill and model, but not an Agents Flow member, so no terminal-action instructions and no reprompt. Cardless runs only; your final message is the result. Pick the regular coder when a Kanban card must be closed through the flow.",
           "system_prompt_file": "prompts/coder.md",
           "model_slug": "codex-runner-gpt-6-1-sol",
           "agent_config_slug": "devteam-config",
-          "group_slug": "a2a-coders",
+          "group_slug": "standalone-coders",
           "skill_slugs": [
             "aw-agent-coder"
           ],
-          "capabilities": "Same Coder contract, running the Codex CLI on GPT-5.6 Sol: implements a scoped coding task end to end and verifies it before reporting. A2A variant: returns a plain result to the calling agent.",
+          "capabilities": "Same Coder contract, running the Codex CLI on GPT-5.6 Sol: implements a scoped coding task end to end and verifies it before reporting. Standalone variant: returns a plain result to the calling agent.",
           "use_cases": [
             "implement a complex feature with GPT-5.6 Sol",
             "debug a difficult issue with the latest Codex model",
