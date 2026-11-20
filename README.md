@@ -218,7 +218,7 @@ twins of `coder-haiku`, `coder-sonnet` and `coder-sol` (same prompt, skill, agen
 config and model), in group `standalone-coders`, which is never a node in an Agents
 Flow. Agents Flow instructions and the missing-action reprompt both key on flow
 membership, so these agents get neither: they return a plain result to the
-caller. Opt-in is explicit: name an `standalone-coder-*` slug. No platform change.
+caller. Opt-in is explicit: name a `standalone-coder-*` slug. No platform change.
 
 When to pick which: use `coder-*` when a Kanban card must be driven and closed
 through the flow. Use `standalone-coder-*` for bounded work whose result goes straight
