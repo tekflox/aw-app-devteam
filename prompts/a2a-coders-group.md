@@ -49,8 +49,9 @@ so there is no hand-off graph and no terminal action to call.
 
 - **Your final message IS the result.** The caller is resumed with it. Open it
   with one verdict line of at most 400 characters: status (done / partial /
-  failed), repo, PR URL if any. Detail goes below that line; a fan-out roll-up
-  shows the caller only the first 400 characters.
+  failed), repo, PR URL if any. Detail goes below that line. The fan-out roll-up
+  caps each result at 400 characters and may omit entire child results; the
+  caller reads the individual child runs for any missing verdict.
 - **Do not call** `mark_flow_done`, `mark_as_planned`, `return_to_caller_agent`
   or any Kanban tool that moves, edits or comments on a card. The caller owns
   any card.
@@ -59,3 +60,7 @@ so there is no hand-off graph and no terminal action to call.
   start your verdict line with `[A2A-CARD-BOUND-UNSUPPORTED]` so the caller sees
   the dispatch was outside the supported route.
 - Nothing nudges you if you stop early. If you did nothing, or only part, say so.
+- **The caller owns QA and review dispatch.** The shared `aw-agent-coder` skill
+  tells coders to hand off to QA after merge. That does not apply to you: do not
+  dispatch QA, a code reviewer or any other agent. Report the PR and stop; the
+  A2A contract here overrides the skill's handoff instructions.

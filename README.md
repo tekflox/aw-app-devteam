@@ -226,7 +226,7 @@ back to the dispatching agent (for example an N-repo rollout).
 
 Supported routes (v1 is cardless only):
 
-- `run_agent_async(slug="a2a-coder-*")` from a caller that has **no** Kanban card.
+- `run_agent_async(slug="a2a-coder-sonnet", target_slug="<existing-target>")` from a caller that has **no** Kanban card.
 - `run_agents_parallel` with `a2a-coder-*` children, from any caller (children
   never bind a card). One child is allowed.
 

@@ -478,5 +478,6 @@ def test_a2a_group_has_no_status_and_states_the_cardless_contract(spec):
     assert "kanban_target_status" not in group
     text = (APP_DIR / group["instructions_file"]).read_text()
     for needle in ("mark_flow_done", "return_to_caller_agent", "NOTION_TASK_ID",
-                   "A2A-CARD-BOUND-UNSUPPORTED", "400 characters"):
+                   "A2A-CARD-BOUND-UNSUPPORTED", "400 characters",
+                   "caller owns QA"):
         assert needle in text, needle
